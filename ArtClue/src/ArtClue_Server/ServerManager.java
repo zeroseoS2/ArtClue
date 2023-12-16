@@ -1,10 +1,14 @@
 package ArtClue_Server;
 
+import java.awt.Color;
 import java.io.*;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 public class ServerManager extends Thread {
@@ -19,6 +23,9 @@ public class ServerManager extends Thread {
     private boolean gameStarted = false;
     private boolean selectingDrawer = false;
     private ArrayList<String> answerList[];
+    private ArrayList<Socket> clients;  // 혹은 List<Socket> clients;로 선언돼 있을 것입니다.
+    private Color currentColor = Color.BLACK;
+
 
     // ServerManager 클래스의 필드 선언 부분에 추가
     private int[] playerPoints; 
@@ -32,6 +39,10 @@ public class ServerManager extends Thread {
 
         // 생성자에서 각 클라이언트의 playerPoints 배열 초기화
         this.playerPoints = new int[4];
+
+        // 생성자에서 클라이언트 리스트 초기화
+        this.clients = new ArrayList<>();
+        this.clients.add(socket);
     }
 
     public void run() {
@@ -72,6 +83,9 @@ public class ServerManager extends Thread {
                     case "message":
                         doMessage(tokens[1], Integer.parseInt(tokens[2]));
                         break;
+                    case "changeColor":
+                        handleColorChange(tokens, socket); // 수정된 부분
+                        break;
                     case "quit":
                         doQuit(printWriter, Integer.parseInt(tokens[1]));
                         break;
@@ -86,6 +100,113 @@ public class ServerManager extends Thread {
         } catch (IOException e) {
             consoleLog(this.nickname + "님이 게임에서 나갔습니다.");
         }
+    }
+
+    
+ // ServerManager 클래스 내부에 추가된 broadcastMessage 메서드
+    private void broadcastMessage(String message) {
+        for (Socket client : clients) {
+            try {
+                PrintWriter pw = new PrintWriter(new OutputStreamWriter(client.getOutputStream(), StandardCharsets.UTF_8), true);
+                pw.println(message);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    // ServerManager 클래스의 필드 선언 부분에 추가
+    private List<ClientColor> clientColors = new ArrayList<>();
+
+    // ClientColor 클래스 추가
+    private static class ClientColor {
+        private Socket socket;
+        private Color color;
+
+        public ClientColor(Socket socket, Color color) {
+            this.socket = socket;
+            this.color = color;
+        }
+
+        public Socket getSocket() {
+            return socket;
+        }
+
+        public Color getColor() {
+            return color;
+        }
+
+        // setColor 메서드 추가
+        public void setColor(Color color) {
+            this.color = color;
+        }
+    }
+
+    // handleColorChange 메서드 수정
+    private void handleColorChange(String[] parts, Socket clientSocket) {
+        if (parts.length > 1) {
+            String[] colorValues = parts[1].split(",");
+            if (colorValues.length == 3) {
+                int red = Integer.parseInt(colorValues[0]);
+                int green = Integer.parseInt(colorValues[1]);
+                int blue = Integer.parseInt(colorValues[2]);
+
+                // 범위를 벗어나는 값 방지
+                red = Math.max(0, Math.min(255, red));
+                green = Math.max(0, Math.min(255, green));
+                blue = Math.max(0, Math.min(255, blue));
+
+                // 추출한 색상 정보로 처리
+                Color newColor = new Color(red, green, blue);
+
+                // 해당 클라이언트의 정보와 함께 다른 클라이언트에게 전파
+                broadcastColorChange(newColor);
+                // 변경된 색상 정보를 서버에 저장
+                setCurrentColor(newColor, clientSocket);
+            } else {
+                System.out.println("부적절한 색상 정보 수신");
+            }
+        } else {
+            System.out.println("색상 정보가 없습니다.");
+        }
+    }
+
+    // setCurrentColor 메서드 수정
+    private void setCurrentColor(Color newColor, Socket clientSocket) {
+        for (ClientColor clientColor : clientColors) {
+            if (clientColor.getSocket() == clientSocket) {
+                clientColor.setColor(newColor);
+                break;
+            }
+        }
+    }
+
+    // broadcastColorChange 메서드 수정
+    private void broadcastColorChange(Color newColor) {
+        for (PrintWriter writer : listWriters[whereIAm]) {
+            writer.println("changeColor:" + newColor.getRed() + "," + newColor.getGreen() + "," + newColor.getBlue());
+            writer.flush();
+        }
+    }
+
+
+ // 변경된 색상 정보를 해당 클라이언트에게 전파
+    private void sendColorToClient(Socket clientSocket, Color newColor) {
+        for (PrintWriter writer : listWriters[whereIAm]) {
+            writer.println("changeColor:" + newColor.getRed() + "," + newColor.getGreen() + "," + newColor.getBlue());
+            writer.flush();
+        }
+    }
+ // 현재 색상을 반환하는 메서드
+    public Color getCurrentColor() {
+        return currentColor;
+    }
+
+    // 현재 색상을 변경하는 메서드
+    public void setCurrentColor(Color color) {
+        this.currentColor = color;
+
+        // 변경된 색상 정보를 다른 클라이언트에게 전파
+        broadcastColorChange(color);
     }
 
     private void doQuit(PrintWriter writer, int num) {
@@ -257,6 +378,9 @@ public class ServerManager extends Thread {
         gameStarted = false;
         totalPlayers = 0;
         currentPlayerIndex = 0;
+        
+        resetPlayerPoints();
+        setCurrentWordFromRandomFile();
     }
 
     private void doDraw(String points, int roomNum) {
