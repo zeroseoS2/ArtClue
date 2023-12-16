@@ -15,7 +15,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 
 public class RoundButton extends JButton {
-	private Image image;
+   private Image image;
     public RoundButton(ImageIcon img) {
         super();
         this.image=img.getImage();
@@ -26,7 +26,7 @@ public class RoundButton extends JButton {
 
     @Override 
     protected void paintComponent(Graphics g) {
-    	 int width = getWidth();
+        int width = getWidth();
          int height = getHeight();
          Graphics2D graphics = (Graphics2D) g;
          graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);

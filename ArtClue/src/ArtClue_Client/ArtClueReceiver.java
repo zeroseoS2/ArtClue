@@ -17,6 +17,7 @@ public class ArtClueReceiver extends Thread {
     BufferedReader br;
     JScrollPane sp;
     ArtClue cm;
+    
     public Color currentColor;
 
 
@@ -72,7 +73,6 @@ public class ArtClueReceiver extends Thread {
             }
         }
     }
-
     private void handleColorChange(String[] tokens) {
         if (tokens.length > 1) {
             String[] colorValues = tokens[1].split(",");
@@ -103,7 +103,20 @@ public class ArtClueReceiver extends Thread {
         }
     }
 
+    
+ // ArtClueReceiver 클래스 내부의 updateColor 메서드 수정
+    public void updateColor(Color newColor) {
+        currentColor = newColor;
 
+        // 현재 색상을 설정하고 UI를 업데이트합니다
+        cm.gDrawing.setColor(currentColor);
+        
+        // Repaint the entire ArtClue component
+        cm.repaint();
+
+        // 다른 클라이언트에게도 현재 색상을 전송
+        sendColorToServer(currentColor);
+    }
 
 
 }
