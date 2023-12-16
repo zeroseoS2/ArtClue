@@ -14,11 +14,4 @@
 	<natures>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
-	<linkedResources>
-		<link>
-			<name>src/Image/gamepage.png</name>
-			<type>1</type>
-			<locationURI>PARENT-4-PROJECT_LOC/Desktop/gamepage.png</locationURI>
-		</link>
-	</linkedResources>
 </projectDescription>
