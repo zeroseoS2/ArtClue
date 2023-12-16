@@ -19,23 +19,19 @@ public class ServerManager extends Thread {
     private boolean gameStarted = false;
     private boolean selectingDrawer = false;
     private ArrayList<String> answerList[];
-    
+
     // ServerManager 클래스의 필드 선언 부분에 추가
-    private static int[] playerPoints;
-
+    private int[] playerPoints; 
     private static String currentWord;
-
 
     public ServerManager(Socket socket, BufferedReader bufferedReader, ArrayList<PrintWriter> listWriters[], ArrayList<String> answerList[]) {
         this.socket = socket;
         this.bufferedReader = bufferedReader;
         this.listWriters = listWriters;
         this.answerList = answerList;
-        
-        // playerPoints 배열 초기화
-        if (playerPoints == null) {
-            playerPoints = new int[4];
-        }
+
+        // 생성자에서 각 클라이언트의 playerPoints 배열 초기화
+        this.playerPoints = new int[4];
     }
 
     public void run() {
@@ -128,12 +124,12 @@ public class ServerManager extends Thread {
         gameStarted = true;
         selectingDrawer = false;
         currentPlayerIndex = 0;
-        
+
         resetPlayerPoints();
 
         broadcast("ㆍ게임이 시작되었습니다. 술래를 선택합니다.", num);
     }
-    
+
     // 모든 플레이어의 포인트를 0으로 초기화하는 메서드
     private void resetPlayerPoints() {
         for (int i = 0; i < playerPoints.length; i++) {
@@ -199,47 +195,44 @@ public class ServerManager extends Thread {
             return "기본단어";
         }
     }
-    
+
     private void setCurrentWordFromRandomFile() {
         currentWord = getRandomWordFromFile();
     }
-    
+
     private void handleAnswer(String answer) {
         System.out.println("Received answer from client " + nickname + ": " + answer);
-        
+
         if (currentWord == null) {
-            // currentWord가 null인 경우에 대한 처리
             System.out.println("currentWord is null. Initializing...");
             setCurrentWordFromRandomFile();
             return;
         }
-        
+
         if (answer.trim().equalsIgnoreCase(currentWord.trim())) {
             System.out.println("Correct answer!");
-                        
+
             // 점수 증가 및 모든 클라이언트에게 알림
-            increasePlayerPoint(currentPlayerIndex);
-            broadcast("ㆍ[" + nickname + "]님이 정답을 맞혔습니다!\n" + ">" + nickname +"님의 현재 포인트: " + playerPoints[currentPlayerIndex], whereIAm);
-            
-            // 게임 종료 여부 확인
-            if (playerPoints[currentPlayerIndex] >= 3) {
+            increasePlayerPoint(whereIAm); // 현재 클라이언트의 인덱스를 전달
+            broadcast("ㆍ[" + nickname + "]님이 정답을 맞혔습니다!\n" + ">" + nickname + "님의 현재 포인트: " + playerPoints[whereIAm], whereIAm);
+
+            if (playerPoints[whereIAm] >= 3) {
                 broadcast("ㆍ[" + nickname + "]님이 3점을 달성하여 이겼습니다!\n    --게임종료--", whereIAm);
                 endGame();
             } else {
-            // 새로운 술래를 선택하고 술래에게 제시어 전송
-            setCurrentWordFromRandomFile();
-            selectNextDrawer(whereIAm);
+                setCurrentWordFromRandomFile();
+                selectNextDrawer(whereIAm);
             }
-
         } else {
             System.out.println("Incorrect answer." + currentWord + " " + answer);
-
             broadcast("[" + nickname + "]: " + answer, whereIAm);
         }
     }
+
     private void increasePlayerPoint(int playerIndex) {
         playerPoints[playerIndex]++;
     }
+
 
     private void selectNextDrawer(int num) {
         currentPlayerIndex++;
@@ -257,9 +250,6 @@ public class ServerManager extends Thread {
             drawer.println("ㆍ당신이 술래입니다. 제시어: " + currentWord);
             drawer.flush();
         }
-        
-        broadcast("ㆍ" + nickname + "이가 술래가 되었습니다.", num);
-
     }
 
     private void endGame() {

@@ -65,14 +65,7 @@ public class ArtClueReceiver extends Thread{
 					cm.repaint();
 				}
 			}
-			else if(tokens[0].equals("roominfo")) {
-				if(tokens[1].equals("0")) {
-					cm.Status.setText("Waiting");
-				}
-				else if(tokens[1].equals("1")) {
-					cm.Status.setText("Running");
-				}
-			}
+
 			else {
 				textArea.append(msg);
 				textArea.append("\n");

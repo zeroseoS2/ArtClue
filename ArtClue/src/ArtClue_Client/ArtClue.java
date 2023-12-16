@@ -83,7 +83,6 @@ public class ArtClue extends JFrame{
 	public String nickname=null;
 	public int WhereIAm=0;
 	public JButton Start = new JButton("Start");
-	public JLabel Status = new JLabel("?");
 	
 	int i;
 	public ArtClue() {
@@ -376,11 +375,6 @@ public class ArtClue extends JFrame{
 		});
 		getContentPane().add(Erase);
 		
-		Status.setVisible(false);
-		Status.setFont(new Font("맑은 고딕",Font.BOLD,40));
-		Status.setForeground(Color.WHITE);
-		Status.setBounds(660, 50, 200, 50);
-		getContentPane().add(Status);
 		
 		//exit button
 		exit.setVisible(true);
@@ -438,10 +432,13 @@ public class ArtClue extends JFrame{
 		Erase.setVisible(false);
 		DrawArea.setVisible(false);
 		Start.setVisible(false);
-		Status.setVisible(false);
 		
 		//change backGround
 		BackGroundImage = new ImageIcon(Main.class.getResource("/Image/LobyImage.png")).getImage();
+
+		//채팅방 초기화
+	    chatArea.setText("");
+
 	}
 	
 	public void goGame() {
@@ -470,12 +467,15 @@ public class ArtClue extends JFrame{
 		DrawArea.setVisible(true);
 		Erase.setVisible(true);
 		Start.setVisible(true);
-		Status.setVisible(true);
 		colorButton.setVisible(true);
 
 		
 		//change backGround
 		BackGroundImage = new ImageIcon(Main.class.getResource("/Image/gamepage.png")).getImage();
+		
+		//채팅방 초기화
+	    chatArea.setText("");
+
 	}
 	
 	public void sendMessage() {
