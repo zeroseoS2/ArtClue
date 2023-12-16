@@ -147,8 +147,8 @@ public class ArtClue extends JFrame{
 		name.setText("");
 		name.setBounds(533,500,100,40);
 		name.setOpaque(false);
-		name.setFont(new Font("맑은 고딕",Font.BOLD,15));
-		name.setForeground(Color.WHITE);
+		name.setFont(new Font("맑은 고딕",Font.BOLD,20));
+		name.setForeground(Color.BLACK);
 		name.requestFocus();
 		getContentPane().add(name);
 		
