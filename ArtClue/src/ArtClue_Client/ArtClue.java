@@ -27,7 +27,6 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -47,7 +46,7 @@ public class ArtClue extends JFrame{
 	public Graphics gDrawing = null;
 	public int x,y;
 
-	public Image BackGroundImage = new ImageIcon(Main.class.getResource("/Image/BackGround.png")).getImage();
+	public Image BackGroundImage = new ImageIcon(Main.class.getResource("/Image/background.png")).getImage();
 	
 	//maybe never removed
 	public JButton exit = new JButton(new ImageIcon(Main.class.getResource("/Image/exit.png")));
@@ -55,9 +54,8 @@ public class ArtClue extends JFrame{
 	public JLabel title = new JLabel(new ImageIcon(Main.class.getResource("/Image/title.png")));
 	
 	//login and connection
-	public JTextField name = new JTextField();
-	public JButton loginButton = new JButton("Login");
-	public JPasswordField password = new JPasswordField();
+	public RoundJTextField name = new RoundJTextField(1);
+	public RoundButton loginButton = new RoundButton(new ImageIcon(Main.class.getResource("/Image/loginbtn.png")));
 	public JTextField ServerIP = new JTextField("127.0.0.1");
 	
 	//Loby group
@@ -122,7 +120,7 @@ public class ArtClue extends JFrame{
 		gDrawing.fillRect(0, 0, 540, 420);
 		repaint();
 		
-
+		
         // 색상 변경 버튼 추가
 		colorButton.setVisible(false);
 		colorButton.setBounds(90, 638, 100, 30);
@@ -142,33 +140,25 @@ public class ArtClue extends JFrame{
 		
 		//제목
 		title.setVisible(true);
-		title.setBounds(340, 100, 700, 120);
+		title.setBounds(520, 120, 200, 200);
 		getContentPane().add(title);
 		
 		name.setVisible(true);
 		name.setText("");
-		name.setBounds(500,220,100,30);
+		name.setBounds(533,500,100,40);
 		name.setOpaque(false);
 		name.setFont(new Font("맑은 고딕",Font.BOLD,15));
 		name.setForeground(Color.WHITE);
 		name.requestFocus();
 		getContentPane().add(name);
 		
-		password.setVisible(true);
-		password.setText("");
-		password.setBounds(500,250,100,30);
-		password.setOpaque(false);
-		password.setFont(new Font("맑은 고딕",Font.BOLD,15));
-		password.setForeground(Color.WHITE);
-		password.requestFocus();
-		getContentPane().add(password);
 		
 		ServerIP.setVisible(true);
 		ServerIP.setBounds(0,0,100,30);
 		getContentPane().add(ServerIP);
 		
 		loginButton.setVisible(true);
-		loginButton.setBounds(600, 220, 70, 60);
+		loginButton.setBounds(637, 488, 70, 60);
 		loginButton.addActionListener(new ActionListener() {
 			//Process after clicked LoginButton
 			@Override
@@ -227,7 +217,7 @@ public class ArtClue extends JFrame{
 		getContentPane().add(lobyInfototal);
 		
 		chatInput.setVisible(false);
-		chatInput.setBounds(880,690,400,30);
+		chatInput.setBounds(807,672,400,30);
 		chatInput.setOpaque(false);
 		chatInput.setFont(new Font("맑은 고딕",Font.BOLD,15));
 		chatInput.setForeground(Color.WHITE);
@@ -413,7 +403,6 @@ public class ArtClue extends JFrame{
 		name.setVisible(false);
 		ServerIP.setVisible(false);
 		loginButton.setVisible(false);
-		password.setVisible(false);
 		colorButton.setVisible(false);
 		
 		//ruby member visible
@@ -447,7 +436,6 @@ public class ArtClue extends JFrame{
 		name.setVisible(false);
 		ServerIP.setVisible(false);
 		loginButton.setVisible(false);
-		password.setVisible(false);
 
 		
 		//ruby member invisible
@@ -514,7 +502,7 @@ public class ArtClue extends JFrame{
 		screenImage = createImage(Main.SCREEN_WIDTH, Main.SCREEN_HEIGHT);
 		screenGraphic = screenImage.getGraphics();
 		screenDraw(screenGraphic);
-		g.drawImage(screenImage, 0, 0, null);
+		g.drawImage(screenImage, -4, 0, null);
 	}
 	public void screenDraw(Graphics g) {
 		g.drawImage(BackGroundImage, 0, 0, null);
@@ -524,4 +512,5 @@ public class ArtClue extends JFrame{
 		paintComponents(g);
 		this.repaint();
 	}
+
 }
