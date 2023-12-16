@@ -294,7 +294,7 @@ public class ArtClue extends JFrame{
 		myInfo.setForeground(Color.WHITE);
 		getContentPane().add(myInfo);
 		
-		//gameroom
+		//gamepage
 		/////////////////////////
 		//////////////////////////
 		Roomnum.setVisible(false);
@@ -408,7 +408,7 @@ public class ArtClue extends JFrame{
     }
     
 	public void goLoby(){
-		//main memver invisible
+		//main member invisible
 		title.setVisible(false);
 		name.setVisible(false);
 		ServerIP.setVisible(false);
@@ -416,7 +416,7 @@ public class ArtClue extends JFrame{
 		password.setVisible(false);
 		colorButton.setVisible(false);
 		
-		//ruby member visible
+		//loby member visible
 		lobyInfo.setVisible(true);
 		lobyInfototal.setVisible(true);
 		chatInput.setVisible(true);
@@ -439,7 +439,7 @@ public class ArtClue extends JFrame{
 	}
 	
 	public void goGame() {
-		//main memver invisible
+		//main member invisible
 		title.setVisible(false);
 		name.setVisible(false);
 		ServerIP.setVisible(false);
@@ -447,7 +447,7 @@ public class ArtClue extends JFrame{
 		password.setVisible(false);
 
 		
-		//ruby member invisible
+		//loby member invisible
 		lobyInfo.setVisible(false);
 		lobyInfototal.setVisible(false);
 		chatInput.setVisible(true);
