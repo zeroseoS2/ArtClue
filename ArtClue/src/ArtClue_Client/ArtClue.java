@@ -513,20 +513,6 @@ public class ArtClue extends JFrame{
 	    this.currentColor = color;
 	    gDrawing.setColor(color);
 	    repaint();
-	    sendColorToServer(color); // 추가: 변경된 색상을 서버에 전송
-	}
-
-	// 메소드 추가: 색상 변경 메소드
-	public void sendColorToServer(Color newColor) {
-	    try {
-	        // 서버로 변경된 색상 정보 전송
-	        if (socket != null && socket.isConnected()) {
-	            PrintWriter writer = new PrintWriter(socket.getOutputStream(), true);
-	            writer.println("changeColor:" + newColor.getRed() + "," + newColor.getGreen() + "," + newColor.getBlue() + ":" + WhereIAm);
-	        }
-	    } catch (IOException e) {
-	        e.printStackTrace();
-	    }
 	}
 
 	// 메소드 추가: 다른 클라이언트에게 색상 전송

@@ -189,14 +189,6 @@ public class ServerManager extends Thread {
         }
     }
 
-
- // 변경된 색상 정보를 해당 클라이언트에게 전파
-    private void sendColorToClient(Socket clientSocket, Color newColor) {
-        for (PrintWriter writer : listWriters[whereIAm]) {
-            writer.println("changeColor:" + newColor.getRed() + "," + newColor.getGreen() + "," + newColor.getBlue());
-            writer.flush();
-        }
-    }
  // 현재 색상을 반환하는 메서드
     public Color getCurrentColor() {
         return currentColor;
@@ -214,10 +206,9 @@ public class ServerManager extends Thread {
         removeWriter(writer, num);
         String data = "ㆍ[" + this.nickname + "]님이 퇴장했습니다.";
         broadcast(data, num);
-
-        if (gameStarted && listWriters[whereIAm].size() <= 1) {
-            endGame();
-        }
+        
+        endGame();
+        
     }
 
     private void removeWriter(PrintWriter writer, int num) {
