@@ -520,18 +520,9 @@ public class ArtClue extends JFrame{
 	    pw.println("changeColor:" + color.getRed() + "," + color.getGreen() + "," + color.getBlue() + ":" + WhereIAm);
 	}
 
-	// updateColor 메서드 내부 수정
-	// ArtClueReceiver 클래스 내부의 updateColor 메서드 수정
-	// ArtClue 클래스의 updateColor 메서드 수정
-	public void updateColor(Color newColor) {
+	public synchronized void updateColor(Color newColor) {
 	    currentColor = newColor;
-
-	    // 현재 색상을 설정하고 UI를 업데이트합니다
 	    gDrawing.setColor(currentColor);
 	    repaint();
-
-	    // 다른 클라이언트에게도 현재 색상을 전파
-	    sendColorToOtherClients(currentColor);
 	}
-
 }
