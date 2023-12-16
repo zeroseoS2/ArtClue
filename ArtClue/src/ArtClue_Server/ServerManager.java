@@ -335,6 +335,8 @@ public class ServerManager extends Thread {
             } else {
                 setCurrentWordFromRandomFile();
                 selectNextDrawer(whereIAm);
+                
+                eraseDrawing(whereIAm);
             }
         } else {
             System.out.println("Incorrect answer." + currentWord + " " + answer);
@@ -364,7 +366,18 @@ public class ServerManager extends Thread {
         // 술래 선택 후에 새로운 술래에게만 제시어를 전송
         sendWordToDrawer(num);
     }
-
+	
+	private void eraseDrawing(int num) {
+	    synchronized (listWriters) {
+	        for (PrintWriter writer : listWriters[num]) {
+	            writer.println("changeColor:0,0,0");
+	            writer.flush();
+	            
+	            writer.println("draw:erase");
+	            writer.flush();
+	        }
+	    }
+	}
     private void sendWordToDrawer(int num) {
         if (listWriters[num].size() > 0) {
             PrintWriter drawer = listWriters[num].get(currentPlayerIndex);
