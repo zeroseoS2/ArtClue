@@ -20,6 +20,9 @@ public class ServerManager extends Thread {
     private boolean selectingDrawer = false;
     private ArrayList<String> answerList[];
     
+    // ServerManager 클래스의 필드 선언 부분에 추가
+    private static int[] playerPoints;
+
     private static String currentWord;
 
 
@@ -28,6 +31,11 @@ public class ServerManager extends Thread {
         this.bufferedReader = bufferedReader;
         this.listWriters = listWriters;
         this.answerList = answerList;
+        
+        // playerPoints 배열 초기화
+        if (playerPoints == null) {
+            playerPoints = new int[4];
+        }
     }
 
     public void run() {
@@ -120,7 +128,17 @@ public class ServerManager extends Thread {
         gameStarted = true;
         selectingDrawer = false;
         currentPlayerIndex = 0;
+        
+        resetPlayerPoints();
+
         broadcast("ㆍ게임이 시작되었습니다. 술래를 선택합니다.", num);
+    }
+    
+    // 모든 플레이어의 포인트를 0으로 초기화하는 메서드
+    private void resetPlayerPoints() {
+        for (int i = 0; i < playerPoints.length; i++) {
+            playerPoints[i] = 0;
+        }
     }
 
     private void runGame(int num) {
@@ -198,12 +216,20 @@ public class ServerManager extends Thread {
         
         if (answer.trim().equalsIgnoreCase(currentWord.trim())) {
             System.out.println("Correct answer!");
-
-            broadcast("ㆍ[" + nickname + "]님이 정답을 맞혔습니다!", whereIAm);
+                        
+            // 점수 증가 및 모든 클라이언트에게 알림
+            increasePlayerPoint(currentPlayerIndex);
+            broadcast("ㆍ[" + nickname + "]님이 정답을 맞혔습니다!\n" + ">" + nickname +"님의 현재 포인트: " + playerPoints[currentPlayerIndex], whereIAm);
+            
+            // 게임 종료 여부 확인
+            if (playerPoints[currentPlayerIndex] >= 3) {
+                broadcast("ㆍ[" + nickname + "]님이 3점을 달성하여 이겼습니다!\n    --게임종료--", whereIAm);
+                endGame();
+            } else {
             // 새로운 술래를 선택하고 술래에게 제시어 전송
             setCurrentWordFromRandomFile();
             selectNextDrawer(whereIAm);
-
+            }
 
         } else {
             System.out.println("Incorrect answer." + currentWord + " " + answer);
@@ -211,8 +237,9 @@ public class ServerManager extends Thread {
             broadcast("[" + nickname + "]: " + answer, whereIAm);
         }
     }
-
-
+    private void increasePlayerPoint(int playerIndex) {
+        playerPoints[playerIndex]++;
+    }
 
     private void selectNextDrawer(int num) {
         currentPlayerIndex++;
