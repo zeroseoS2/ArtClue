@@ -117,10 +117,10 @@ public class ArtClue extends JFrame{
             }
         });
 		// 그림판 초기화
-		iDrawing = createImage(550, 490);
+		iDrawing = createImage(540, 420);
 		gDrawing = iDrawing.getGraphics();
 		gDrawing.setColor(Color.WHITE);
-		gDrawing.fillRect(0, 0, 550, 490);
+		gDrawing.fillRect(0, 0, 540, 420);
 		repaint();
 		
 
@@ -246,7 +246,7 @@ public class ArtClue extends JFrame{
 		getContentPane().add(chatInput);
 		
 		
-		chatArea.setBounds(880,120,400,570);
+		chatArea.setBounds(807,168,400,506);
 		chatArea.setOpaque(false);
 		chatArea.setFont(new Font("맑은 고딕",Font.BOLD,15));
 		chatArea.setForeground(Color.WHITE);
@@ -257,7 +257,7 @@ public class ArtClue extends JFrame{
 		chatSP.setOpaque(false);
 		chatSP.getViewport().setOpaque(false);
 		chatSP.setVisible(false);
-		chatSP.setBounds(880, 120, 400, 570);
+		chatSP.setBounds(807,168,400,506);
 		chatSP.getVerticalScrollBar().setValue(chatSP.getVerticalScrollBar().getMaximum());
 		getContentPane().add(chatSP);
 
@@ -277,10 +277,10 @@ public class ArtClue extends JFrame{
 					goGame();
 					
 					//drawing board show
-					iDrawing=createImage(550,490);
+					iDrawing=createImage(540,420);
 					gDrawing=iDrawing.getGraphics();
 					gDrawing.setColor(Color.WHITE);
-					gDrawing.fillRect(0, 0, 550, 490);
+					gDrawing.fillRect(0, 0, 540, 420);
 					repaint();
 					
 				}
@@ -316,7 +316,7 @@ public class ArtClue extends JFrame{
 		
 		DrawArea.setVisible(false);
 		DrawArea.setOpaque(false);
-		DrawArea.setBounds(25,146,550,490);
+		DrawArea.setBounds(82,205,540,420);
 		DrawArea.addMouseMotionListener(new MouseMotionListener() {
 			public void mouseMoved(MouseEvent me) {
 				x = me.getX();
@@ -475,7 +475,7 @@ public class ArtClue extends JFrame{
 
 		
 		//change backGround
-		BackGroundImage = new ImageIcon(Main.class.getResource("/Image/InGameve2.png")).getImage();
+		BackGroundImage = new ImageIcon(Main.class.getResource("/Image/gamepage.png")).getImage();
 	}
 	
 	public void sendMessage() {
@@ -519,7 +519,7 @@ public class ArtClue extends JFrame{
 	public void screenDraw(Graphics g) {
 		g.drawImage(BackGroundImage, 0, 0, null);
 		if(WhereIAm!=0) {
-			g.drawImage(iDrawing,25,146,null);
+			g.drawImage(iDrawing,82,205,null);
 		}
 		paintComponents(g);
 		this.repaint();
