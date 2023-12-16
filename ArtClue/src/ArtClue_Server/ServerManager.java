@@ -18,8 +18,10 @@ public class ServerManager extends Thread {
     private int totalPlayers = 0;
     private boolean gameStarted = false;
     private boolean selectingDrawer = false;
-    private String currentWord;
     private ArrayList<String> answerList[];
+    
+    private static String currentWord;
+
 
     public ServerManager(Socket socket, BufferedReader bufferedReader, ArrayList<PrintWriter> listWriters[], ArrayList<String> answerList[]) {
         this.socket = socket;
@@ -106,6 +108,7 @@ public class ServerManager extends Thread {
 
         totalPlayers++;
         if (totalPlayers >= 2 && !gameStarted) {
+            // 모든 클라이언트가 방에 들어왔을 때만 게임 시작
             selectingDrawer = true;
             broadcast("ㆍ게임을 시작하려면 스타트 버튼을 눌러주세요.", num);
         }
@@ -128,16 +131,20 @@ public class ServerManager extends Thread {
 
     private void selectDrawer(int num) {
         if (listWriters[num].size() > 0) {
-            int drawerIndex = new Random().nextInt(listWriters[num].size());
-            PrintWriter drawer = listWriters[num].get(drawerIndex);
-            String selectedWord = getRandomWordFromFile();
-            drawer.println("ㆍ당신이 술래입니다. 제시어: " + selectedWord);
+            // 모든 클라이언트에 대해 술래를 정하지 않았다면 술래를 정함
+            if (!selectingDrawer) {
+                currentPlayerIndex = totalPlayers - 1;
+                selectingDrawer = true;
+            } else {
+                // 현재 술래 다음 순서로 설정
+                currentPlayerIndex = (currentPlayerIndex + 1) % totalPlayers;
+            }
+
+            PrintWriter drawer = listWriters[num].get(currentPlayerIndex);
+            currentWord = getRandomWordFromFile();
+            drawer.println("ㆍ당신이 술래입니다. 제시어: " + currentWord);
             drawer.flush();
 
-            currentPlayerIndex = drawerIndex + 1;
-            if (currentPlayerIndex >= listWriters[num].size()) {
-                currentPlayerIndex = 0;
-            }
         }
     }
 
@@ -174,37 +181,47 @@ public class ServerManager extends Thread {
             return "기본단어";
         }
     }
-
+    
+    private void setCurrentWordFromRandomFile() {
+        currentWord = getRandomWordFromFile();
+    }
+    
     private void handleAnswer(String answer) {
         System.out.println("Received answer from client " + nickname + ": " + answer);
-
-        if (answer.equalsIgnoreCase(currentWord)) {
+        
+        if (currentWord == null) {
+            // currentWord가 null인 경우에 대한 처리
+            System.out.println("currentWord is null. Initializing...");
+            setCurrentWordFromRandomFile();
+            return;
+        }
+        
+        if (answer.trim().equalsIgnoreCase(currentWord.trim())) {
             System.out.println("Correct answer!");
 
             broadcast("ㆍ[" + nickname + "]님이 정답을 맞혔습니다!", whereIAm);
+            // 새로운 술래를 선택하고 술래에게 제시어 전송
+            setCurrentWordFromRandomFile();
             selectNextDrawer(whereIAm);
-            sendWordToDrawer(whereIAm);
-            currentWord = getRandomWordFromFile();
 
-            System.out.println("New word: " + currentWord);
-            broadcast("ㆍ새로운 제시어: " + currentWord, whereIAm);
+
         } else {
-            System.out.println("Incorrect answer.");
+            System.out.println("Incorrect answer." + currentWord + " " + answer);
 
             broadcast("[" + nickname + "]: " + answer, whereIAm);
         }
     }
 
-    private void setCurrentWordFromRandomFile() {
-        currentWord = getRandomWordFromFile();
-        broadcast("ㆍ새로운 제시어: " + currentWord, whereIAm);
-    }
+
 
     private void selectNextDrawer(int num) {
         currentPlayerIndex++;
         if (currentPlayerIndex >= listWriters[num].size()) {
             currentPlayerIndex = 0;
         }
+
+        // 술래 선택 후에 새로운 술래에게만 제시어를 전송
+        sendWordToDrawer(num);
     }
 
     private void sendWordToDrawer(int num) {
@@ -213,6 +230,9 @@ public class ServerManager extends Thread {
             drawer.println("ㆍ당신이 술래입니다. 제시어: " + currentWord);
             drawer.flush();
         }
+        
+        broadcast("ㆍ" + nickname + "이가 술래가 되었습니다.", num);
+
     }
 
     private void endGame() {
