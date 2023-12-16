@@ -14,6 +14,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
@@ -39,8 +40,11 @@ public class ArtClue extends JFrame{
 	public ArtClue thisclass=this;
     private Color newColor = Color.BLACK; // 색상변경을 위함
 	private int mouseX, mouseY;//창 이동
+    private Color currentColor;
 
-	
+    public Color getCurrentColor() {
+        return currentColor;
+    }
 	//drawing board member
 	public Image iDrawing = null;
 	public Graphics gDrawing = null;
@@ -97,6 +101,8 @@ public class ArtClue extends JFrame{
 		this.setBackground(new Color(0, 0, 0, 0));
 		getContentPane().setLayout(null);
 		
+	    currentColor = Color.BLACK;
+
 		//창 이동
 		addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent e) {
@@ -385,17 +391,6 @@ public class ArtClue extends JFrame{
 		});
 		getContentPane().add(exit);
 	}
-
-    // 메소드 추가: 색상 변경 메소드
-    public void setColor(Color color) {
-        this.newColor = color;
-        gDrawing.setColor(color);
-        repaint();
-    }
-    public void sendColorToOtherClients(Color color) {
-        // 클라이언트들에게 색상 변경 정보를 전송하는 로직 추가
-        pw.println("color:" + color.getRGB() + ":" + WhereIAm);
-    }
     
 	public void goLoby(){
 		//main memver invisible
@@ -511,6 +506,46 @@ public class ArtClue extends JFrame{
 		}
 		paintComponents(g);
 		this.repaint();
+	}
+	
+	// ArtClue 클래스 내부에 추가
+	public void setColor(Color color) {
+	    this.currentColor = color;
+	    gDrawing.setColor(color);
+	    repaint();
+	    sendColorToServer(color); // 추가: 변경된 색상을 서버에 전송
+	}
+
+	// 메소드 추가: 색상 변경 메소드
+	public void sendColorToServer(Color newColor) {
+	    try {
+	        // 서버로 변경된 색상 정보 전송
+	        if (socket != null && socket.isConnected()) {
+	            PrintWriter writer = new PrintWriter(socket.getOutputStream(), true);
+	            writer.println("changeColor:" + newColor.getRed() + "," + newColor.getGreen() + "," + newColor.getBlue() + ":" + WhereIAm);
+	        }
+	    } catch (IOException e) {
+	        e.printStackTrace();
+	    }
+	}
+
+	// 메소드 추가: 다른 클라이언트에게 색상 전송
+	public void sendColorToOtherClients(Color color) {
+	    pw.println("changeColor:" + color.getRed() + "," + color.getGreen() + "," + color.getBlue() + ":" + WhereIAm);
+	}
+
+	// updateColor 메서드 내부 수정
+	// ArtClueReceiver 클래스 내부의 updateColor 메서드 수정
+	// ArtClue 클래스의 updateColor 메서드 수정
+	public void updateColor(Color newColor) {
+	    currentColor = newColor;
+
+	    // 현재 색상을 설정하고 UI를 업데이트합니다
+	    gDrawing.setColor(currentColor);
+	    repaint();
+
+	    // 다른 클라이언트에게도 현재 색상을 전파
+	    sendColorToOtherClients(currentColor);
 	}
 
 }
