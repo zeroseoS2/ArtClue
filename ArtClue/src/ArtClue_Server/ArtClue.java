@@ -13,15 +13,20 @@ import java.util.ArrayList;
 public class ArtClue {
     ServerSocket serverSocket = null;
     ArrayList<PrintWriter> listWriters[] = new ArrayList[5];
+    ArrayList<String> answerList[] = new ArrayList[5]; // 정답 리스트 선언
 
     public ArtClue() {
         for (int i = 0; i < 5; i++) {
             listWriters[i] = new ArrayList<PrintWriter>();
+            // FileRead 클래스를 사용하여 정답 목록을 읽어옴
+	        FileRead fileRead = new FileRead("src/ArtClue_Server/answer.txt");
+	        ArrayList<String> answerList = fileRead.getAnswer();
         }
-        new Chat(listWriters).start();
+        new Chat(listWriters, answerList).start(); // Chat 클래스에 정답 리스트를 전달
         new ServerInfoSender(listWriters).start();
         access();
     }
+    
 
     public void access() {
         try {
@@ -52,7 +57,7 @@ public class ArtClue {
 
     public void login(Socket socket, BufferedReader buffereedReader) {
         System.out.println("로그인함");
-        new ServerManager(socket, buffereedReader, listWriters).start();
+        new ServerManager(socket, buffereedReader, listWriters, answerList).start();
     }
 
  // 메소드 추가: 색상 변경 메소드
@@ -74,6 +79,8 @@ public class ArtClue {
 	 * writer.println(message); writer.flush(); } } catch (Exception e) {
 	 * e.printStackTrace(); } }
 	 */
+
+
 
     private static void consoleLog(String log) {
         System.out.println("[server " + Thread.currentThread().getId() + "] " + log);
