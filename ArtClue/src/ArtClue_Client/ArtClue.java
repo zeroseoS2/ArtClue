@@ -85,7 +85,7 @@ public class ArtClue extends JFrame{
 	public String nickname=null;
 	public int WhereIAm=0;
 	public JButton Start = new JButton("Start");
-	
+
 	int i;
 	public ArtClue() {
 		//Music introMusic = new Music("CandyLand.mp3", true);
