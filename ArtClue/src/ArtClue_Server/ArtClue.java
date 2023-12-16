@@ -60,26 +60,6 @@ public class ArtClue {
         new ServerManager(socket, buffereedReader, listWriters, answerList).start();
     }
 
- // 메소드 추가: 색상 변경 메소드
-	/*
-	 * public void setColor(int rgb, String nickname) { Color color = new
-	 * Color(rgb); this.newColor = color;
-	 * 
-	 * // 해당 방의 클라이언트들에게만 색상 변경 메시지 전송 String colorMsg = "color:" + rgb + ":" +
-	 * nickname; broadcast(colorMsg, getRoomNumberByNickname(nickname)); }
-	 * 
-	 * // 메소드 추가: 닉네임으로부터 방 번호를 얻는 메소드 public int getRoomNumberByNickname(String
-	 * nickname) { for (int i = 0; i < 5; i++) { if
-	 * (listWriters[i].containsKey(nickname)) { return i; } } return -1; // 방 번호를 찾지
-	 * 못한 경우 }
-	 * 
-	 * // 메소드 추가: 메시지를 특정 방에 브로드캐스트하는 메소드 public void broadcast(String message, int
-	 * roomNumber) { try { // 특정 방에 브로드캐스트 ArrayList<PrintWriter> writers =
-	 * listWriters[roomNumber]; for (PrintWriter writer : writers) {
-	 * writer.println(message); writer.flush(); } } catch (Exception e) {
-	 * e.printStackTrace(); } }
-	 */
-
 
 
     private static void consoleLog(String log) {
