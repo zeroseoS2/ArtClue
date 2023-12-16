@@ -12,7 +12,6 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter;
 import java.awt.event.MouseMotionListener;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -21,7 +20,6 @@ import java.io.PrintWriter;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
-
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JColorChooser;
@@ -33,21 +31,25 @@ import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import java.awt.event.MouseMotionAdapter;
+
 
 public class ArtClue extends JFrame{
 	public Image screenImage;
 	public Graphics screenGraphic;
 	public ArtClue thisclass=this;
     private Color newColor = Color.BLACK; // 색상변경을 위함
-    
 	private int mouseX, mouseY;//창 이동
+
 	
 	//drawing board member
 	public Image iDrawing = null;
 	public Graphics gDrawing = null;
 	public int x,y;
+
 	public Image BackGroundImage = new ImageIcon(Main.class.getResource("/Image/BackGround.png")).getImage();
 	
+	//maybe never removed
 	public JButton exit = new JButton(new ImageIcon(Main.class.getResource("/Image/exit.png")));
 	
 	public JLabel title = new JLabel(new ImageIcon(Main.class.getResource("/Image/title.png")));
@@ -87,6 +89,7 @@ public class ArtClue extends JFrame{
 	public ArtClue() {
 		//Music introMusic = new Music("CandyLand.mp3", true);
 		//introMusic.start();		
+		
 		this.setUndecorated(true);
 		this.setTitle("Catch Mind");
 		this.setSize(Main.SCREEN_WIDTH, Main.SCREEN_HEIGHT);
@@ -206,6 +209,7 @@ public class ArtClue extends JFrame{
 		});
 		getContentPane().add(loginButton);
 		
+		
 		//////////// LobyButton From Here
 		////////////
 		////////////
@@ -224,7 +228,7 @@ public class ArtClue extends JFrame{
 		getContentPane().add(lobyInfototal);
 		
 		chatInput.setVisible(false);
-		chatInput.setBounds(880,689,400,30);
+		chatInput.setBounds(880,690,400,30);
 		chatInput.setOpaque(false);
 		chatInput.setFont(new Font("맑은 고딕",Font.BOLD,15));
 		chatInput.setForeground(Color.WHITE);
@@ -242,7 +246,7 @@ public class ArtClue extends JFrame{
 		getContentPane().add(chatInput);
 		
 		
-		chatArea.setBounds(880,150,400,570);
+		chatArea.setBounds(880,120,400,570);
 		chatArea.setOpaque(false);
 		chatArea.setFont(new Font("맑은 고딕",Font.BOLD,15));
 		chatArea.setForeground(Color.WHITE);
@@ -294,7 +298,7 @@ public class ArtClue extends JFrame{
 		myInfo.setForeground(Color.WHITE);
 		getContentPane().add(myInfo);
 		
-		//gamepage
+		//gameroom
 		/////////////////////////
 		//////////////////////////
 		Roomnum.setVisible(false);
@@ -352,10 +356,12 @@ public class ArtClue extends JFrame{
 		Start.addMouseListener(new MouseAdapter() {
 			public void mousePressed(MouseEvent e) {
 		        System.out.println("Start button clicked!");
-				pw.println("rungame:"+WhereIAm);
-		        pw.println("answer:" + chatInput.getText() + ":" + WhereIAm);
 
-			}
+		        // 기존의 메시지 전송 로직
+		        pw.println("rungame:" + WhereIAm);
+
+		        chatInput.setText("");
+		    }
 		});
 		getContentPane().add(Start);
 
@@ -408,7 +414,7 @@ public class ArtClue extends JFrame{
     }
     
 	public void goLoby(){
-		//main member invisible
+		//main memver invisible
 		title.setVisible(false);
 		name.setVisible(false);
 		ServerIP.setVisible(false);
@@ -416,7 +422,7 @@ public class ArtClue extends JFrame{
 		password.setVisible(false);
 		colorButton.setVisible(false);
 		
-		//loby member visible
+		//ruby member visible
 		lobyInfo.setVisible(true);
 		lobyInfototal.setVisible(true);
 		chatInput.setVisible(true);
@@ -439,7 +445,7 @@ public class ArtClue extends JFrame{
 	}
 	
 	public void goGame() {
-		//main member invisible
+		//main memver invisible
 		title.setVisible(false);
 		name.setVisible(false);
 		ServerIP.setVisible(false);
@@ -447,7 +453,7 @@ public class ArtClue extends JFrame{
 		password.setVisible(false);
 
 		
-		//loby member invisible
+		//ruby member invisible
 		lobyInfo.setVisible(false);
 		lobyInfototal.setVisible(false);
 		chatInput.setVisible(true);
@@ -473,19 +479,25 @@ public class ArtClue extends JFrame{
 	}
 	
 	public void sendMessage() {
-		try {
-			String request = "message:"+chatInput.getText()+":"+Integer.toString(WhereIAm);
-			pw.println(request);
-	        //pw.flush(); // 추가된 부분
+	    try {
+	        // 클라이언트가 "답"만 입력하는 경우를 처리
+	        String answer = chatInput.getText().trim();
+	        if (!answer.isEmpty()) {
+	            pw.println("answer:" + answer);
+	        } else {
+	            System.out.println("답을 입력하세요.");
+	            // 필요에 따라 사용자에게 메시지를 보여줄 수 있습니다.
+	        }
+	        pw.println(answer);
+	        pw.flush();
 
-			
-			chatInput.setText("");
-			chatInput.requestFocus();
-		}
-		catch(Exception e) {
-			e.printStackTrace();
-		}
+	        chatInput.setText("");
+	        chatInput.requestFocus();
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
 	}
+
 	
 	public void refreshInfo(String info[]) {
 		int total = 0;
