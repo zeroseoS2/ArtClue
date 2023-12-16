@@ -5,6 +5,7 @@ import java.io.*;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -350,12 +351,20 @@ public class ServerManager extends Thread {
         }
     }
 
-    private void increasePlayerPoint(int playerIndex) {
-        playerPoints[playerIndex]++;
+    // 플레이어 점수 증가 메서드
+    public void increasePlayerPoint(int playerIndex) {
+        // playerIndex가 유효한 범위인지 확인
+        if (playerIndex >= 0 && playerIndex < playerPoints.length) {
+            // 올바른 인덱스에 접근
+            playerPoints[playerIndex] += 1;
+            System.out.println("Player " + playerIndex + "'s points: " + playerPoints[playerIndex]);
+        } else {
+            // 유효하지 않은 인덱스에 대한 처리
+            System.out.println("Invalid player index");
+        }
     }
 
-
-    private void selectNextDrawer(int num) {
+	private void selectNextDrawer(int num) {
         currentPlayerIndex++;
         if (currentPlayerIndex >= listWriters[num].size()) {
             currentPlayerIndex = 0;
@@ -379,6 +388,8 @@ public class ServerManager extends Thread {
         totalPlayers = 0;
         currentPlayerIndex = 0;
         
+        Arrays.fill(playerPoints, 0);
+
         resetPlayerPoints();
         setCurrentWordFromRandomFile();
     }
