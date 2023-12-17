@@ -2,12 +2,12 @@ package ArtClue_Client;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
+
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
@@ -18,7 +18,7 @@ public class ArtClueReceiver extends Thread {
     BufferedReader br;
     JScrollPane sp;
     ArtClue cm;
-    
+
     public Color currentColor;
 
 
@@ -36,8 +36,9 @@ public class ArtClueReceiver extends Thread {
         this.br = cm.br;
         this.sp = cm.chatSP;
     }
-    
-    public void run() {
+
+    @Override
+	public void run() {
         while (true) {
             String msg = null;
             try {
@@ -89,7 +90,7 @@ public class ArtClueReceiver extends Thread {
         }
     }
 
- 
+
  // ArtClueReceiver 클래스에 추가된 handleColorChange 메서드
     private void handleColorChange(String[] tokens) {
         if (tokens.length > 1) {
@@ -121,14 +122,14 @@ public class ArtClueReceiver extends Thread {
         }
     }
 
-    
+
  // ArtClueReceiver 클래스 내부의 updateColor 메서드 수정
     public void updateColor(Color newColor) {
         currentColor = newColor;
 
         // 현재 색상을 설정하고 UI를 업데이트합니다
         cm.gDrawing.setColor(currentColor);
-        
+
         // Repaint the entire ArtClue component
         cm.repaint();
 
