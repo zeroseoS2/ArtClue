@@ -7,7 +7,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
-
+import java.util.HashSet;
+import java.util.Set;
+import javax.swing.DefaultListModel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
@@ -59,6 +61,7 @@ public class ArtClueReceiver extends Thread {
     }
 
 
+
     // ArtClueReceiver 클래스 내의 processMessage 메서드
     private void processMessage(String msg) {
     	System.out.println(msg);
@@ -89,7 +92,6 @@ public class ArtClueReceiver extends Thread {
             sp.getVerticalScrollBar().setValue(sp.getVerticalScrollBar().getMaximum());
         }
     }
-
 
  // ArtClueReceiver 클래스에 추가된 handleColorChange 메서드
     private void handleColorChange(String[] tokens) {

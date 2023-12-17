@@ -39,7 +39,7 @@ public class ServerManager extends Thread {
         this.answerList = answerList;
 
         // 생성자에서 각 클라이언트의 playerPoints 배열 초기화
-        this.playerPoints = new int[4];
+        this.playerPoints = new int[5];
 
         // 생성자에서 클라이언트 리스트 초기화
         this.clients = new ArrayList<>();
@@ -85,7 +85,7 @@ public class ServerManager extends Thread {
                         doMessage(tokens[1], Integer.parseInt(tokens[2]));
                         break;
                     case "changeColor":
-                        handleColorChange(tokens, socket); // 수정된 부분
+                        handleColorChange(tokens, socket);
                         break;
                     case "quit":
                         doQuit(printWriter, Integer.parseInt(tokens[1]));
@@ -224,13 +224,14 @@ public class ServerManager extends Thread {
         addWriter(writer, num);
 
         totalPlayers++;
-        if (totalPlayers >= 2 && !gameStarted) {
+        // Check if the user is in a game room before starting the game
+        if (totalPlayers >= 1 && !gameStarted && num != 0) {
             // 모든 클라이언트가 방에 들어왔을 때만 게임 시작
             selectingDrawer = true;
-            broadcast("ㆍ게임을 시작하려면 스타트 버튼을 눌러주세요.", num);
+            broadcast("ㆍ게임을 시작하려면 시작버튼을 눌러주세요.", num);
         }
 
-        System.out.println(nickname + "이가 입장");
+        System.out.println("ㆍ[" + nickname + "]님이 입장하였습니다.");
     }
 
     private void startGame(int num) {
@@ -240,7 +241,7 @@ public class ServerManager extends Thread {
 
         resetPlayerPoints();
 
-        broadcast("ㆍ게임이 시작되었습니다. 술래를 선택합니다.", num);
+        broadcast("**게임이 시작되었습니다.**", num);
     }
 
     // 모든 플레이어의 포인트를 0으로 초기화하는 메서드
@@ -252,7 +253,8 @@ public class ServerManager extends Thread {
 
     private void runGame(int num) {
         System.out.println("Received rungame message from client " + nickname);
-        broadcast("ㆍ게임이 시작되었습니다. 술래를 선택합니다.", whereIAm);
+        eraseDrawing(whereIAm);
+        broadcast("**게임이 시작되었습니다.**", whereIAm);
         selectDrawer(whereIAm);
     }
 
@@ -269,7 +271,7 @@ public class ServerManager extends Thread {
 
             PrintWriter drawer = listWriters[num].get(currentPlayerIndex);
             currentWord = getRandomWordFromFile();
-            drawer.println("ㆍ당신이 술래입니다. 제시어: " + currentWord);
+            drawer.println("ㆍ당신이 그릴차례입니다. 제시어: <" + currentWord + ">");
             drawer.flush();
 
         }
@@ -327,10 +329,10 @@ public class ServerManager extends Thread {
 
             // 점수 증가 및 모든 클라이언트에게 알림
             increasePlayerPoint(whereIAm); // 현재 클라이언트의 인덱스를 전달
-            broadcast("ㆍ[" + nickname + "]님이 정답을 맞혔습니다!\n" + ">" + nickname + "님의 현재 포인트: " + playerPoints[whereIAm], whereIAm);
+            broadcast("ㆍ[" + nickname + "]님이 정답을 맞혔습니다! [정답: "+ currentWord + "]\n" + ">" + nickname + "님의 현재 점수: " + playerPoints[whereIAm], whereIAm);
 
             if (playerPoints[whereIAm] >= 3) {
-                broadcast("ㆍ[" + nickname + "]님이 3점을 달성하여 이겼습니다!\n    --게임종료--", whereIAm);
+                broadcast("ㆍ[" + nickname + "]님의 승리!\n     --게임종료--", whereIAm);
                 endGame();
             } else {
                 setCurrentWordFromRandomFile();
@@ -381,7 +383,7 @@ public class ServerManager extends Thread {
     private void sendWordToDrawer(int num) {
         if (listWriters[num].size() > 0) {
             PrintWriter drawer = listWriters[num].get(currentPlayerIndex);
-            drawer.println("ㆍ당신이 술래입니다. 제시어: " + currentWord);
+            drawer.println("ㆍ당신이 그릴차례입니다. 제시어: <" + currentWord + ">");
             drawer.flush();
         }
     }
