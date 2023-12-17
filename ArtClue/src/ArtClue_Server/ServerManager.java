@@ -7,9 +7,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
 public class ServerManager extends Thread {
@@ -17,16 +15,14 @@ public class ServerManager extends Thread {
     private Socket socket;
     private BufferedReader bufferedReader;
     private PrintWriter printWriter;
-    private int whereIAm;
+    private int RoomNum;
     private ArrayList<PrintWriter> listWriters[];
     private int currentPlayerIndex = 0;
     private int totalPlayers = 0;
     private boolean gameStarted = false;
     private boolean selectingDrawer = false;
     private ArrayList<String> answerList[];
-    private ArrayList<Socket> clients;  // 혹은 List<Socket> clients;로 선언돼 있을 것입니다.
-    private Color currentColor = Color.BLACK;
-
+    private List<ClientColor> clientColors = new ArrayList<>(); //다른 클라이언트에게 색상 정보를 전하기 위한 배열
 
     // ServerManager 클래스의 필드 선언 부분에 추가
     private int[] playerPoints; 
@@ -40,32 +36,25 @@ public class ServerManager extends Thread {
 
         // 생성자에서 각 클라이언트의 playerPoints 배열 초기화
         this.playerPoints = new int[5];
-
-        // 생성자에서 클라이언트 리스트 초기화
-        this.clients = new ArrayList<>();
-        this.clients.add(socket);
     }
 
     public void run() {
         try {
             printWriter = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8));
             String request = bufferedReader.readLine();
-            System.out.println("닉네임은 " + request);
             this.nickname = request;
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        rubyChat();
+        Chat();
     }
 
-    private void rubyChat() {
+    private void Chat() {
         try {
             while (true) {
                 String request = bufferedReader.readLine();
                 if (request == null) {
-                    System.out.println("누군가 나갑니다");
-                    doQuit(printWriter, this.whereIAm);
+                    doQuit(printWriter, this.RoomNum);
                     break;
                 }
 
@@ -73,7 +62,6 @@ public class ServerManager extends Thread {
                 switch (tokens[0]) {
                     case "join":
                         doJoin(printWriter, Integer.parseInt(tokens[1]));
-                        System.out.println(Integer.parseInt(tokens[1]) == 0 ? "main chatroom entry" : "room " + tokens[1] + " entry");
                         break;
                     case "rungame":
                         runGame(Integer.parseInt(tokens[1]));
@@ -103,46 +91,21 @@ public class ServerManager extends Thread {
         }
     }
 
-    
- // ServerManager 클래스 내부에 추가된 broadcastMessage 메서드
-    private void broadcastMessage(String message) {
-        for (Socket client : clients) {
-            try {
-                PrintWriter pw = new PrintWriter(new OutputStreamWriter(client.getOutputStream(), StandardCharsets.UTF_8), true);
-                pw.println(message);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-    // ServerManager 클래스의 필드 선언 부분에 추가
-    private List<ClientColor> clientColors = new ArrayList<>();
-
-    // ClientColor 클래스 추가
+    // ==================== 색상 변경 관련 코드 ==============================
     private static class ClientColor {
         private Socket socket;
         private Color color;
-
-        public ClientColor(Socket socket, Color color) {
-            this.socket = socket;
-            this.color = color;
-        }
 
         public Socket getSocket() {
             return socket;
         }
 
-        public Color getColor() {
-            return color;
-        }
-
-        // setColor 메서드 추가
         public void setColor(Color color) {
             this.color = color;
         }
     }
 
-    // handleColorChange 메서드 수정
+    // 펜의 색상을 변경하기 위한 메소드
     private void handleColorChange(String[] parts, Socket clientSocket) {
         if (parts.length > 1) {
             String[] colorValues = parts[1].split(",");
@@ -171,7 +134,7 @@ public class ServerManager extends Thread {
         }
     }
 
-    // setCurrentColor 메서드 수정
+    // 현재 펜의 색상 변경
     private void setCurrentColor(Color newColor, Socket clientSocket) {
         for (ClientColor clientColor : clientColors) {
             if (clientColor.getSocket() == clientSocket) {
@@ -181,34 +144,41 @@ public class ServerManager extends Thread {
         }
     }
 
-    // broadcastColorChange 메서드 수정
+    // 다른 클라이언트에게 색상변경을 알림
     private void broadcastColorChange(Color newColor) {
-        for (PrintWriter writer : listWriters[whereIAm]) {
+        for (PrintWriter writer : listWriters[RoomNum]) {
             writer.println("changeColor:" + newColor.getRed() + "," + newColor.getGreen() + "," + newColor.getBlue());
             writer.flush();
         }
     }
+    // =============================================================
+    //클라이언트가 입장했을 때
+    private void doJoin(PrintWriter writer, int num) {
+        String data = "ㆍ[" + nickname + "쿵야]님이 입장하였습니다.";
+        broadcast(data, num);
+        RoomNum = num;
+        addWriter(writer, num);
 
- // 현재 색상을 반환하는 메서드
-    public Color getCurrentColor() {
-        return currentColor;
+        totalPlayers++;
+        //아직 게임 시작 버튼을 누르지 않았을 때
+        if (totalPlayers >= 1 && !gameStarted && num != 0) {
+            selectingDrawer = true;
+            broadcast("ㆍ게임을 시작하려면 시작버튼을 눌러주세요.", num);
+        }
+        System.out.println("ㆍ[" + nickname + "쿵야]님이 입장하였습니다.");
     }
-
-    // 현재 색상을 변경하는 메서드
-    public void setCurrentColor(Color color) {
-        this.currentColor = color;
-
-        // 변경된 색상 정보를 다른 클라이언트에게 전파
-        broadcastColorChange(color);
-    }
-
+    //클라이언트가 퇴장했을 때
     private void doQuit(PrintWriter writer, int num) {
         removeWriter(writer, num);
-        String data = "ㆍ[" + this.nickname + "]님이 퇴장했습니다.";
+        String data = "ㆍ[" + this.nickname + "쿵야]님이 퇴장했습니다.";
         broadcast(data, num);
         
         endGame();
-        
+    }
+    private void addWriter(PrintWriter writer, int num) {
+        synchronized (listWriters) {
+            listWriters[num].add(writer);
+        }
     }
 
     private void removeWriter(PrintWriter writer, int num) {
@@ -216,48 +186,17 @@ public class ServerManager extends Thread {
             listWriters[num].remove(writer);
         }
     }
-
-    private void doJoin(PrintWriter writer, int num) {
-        String data = "ㆍ[" + nickname + "]님이 입장하였습니다.";
-        broadcast(data, num);
-        whereIAm = num;
-        addWriter(writer, num);
-
-        totalPlayers++;
-        // Check if the user is in a game room before starting the game
-        if (totalPlayers >= 1 && !gameStarted && num != 0) {
-            // 모든 클라이언트가 방에 들어왔을 때만 게임 시작
-            selectingDrawer = true;
-            broadcast("ㆍ게임을 시작하려면 시작버튼을 눌러주세요.", num);
-        }
-
-        System.out.println("ㆍ[" + nickname + "]님이 입장하였습니다.");
-    }
-
-    private void startGame(int num) {
-        gameStarted = true;
-        selectingDrawer = false;
-        currentPlayerIndex = 0;
-
-        resetPlayerPoints();
-
-        broadcast("**게임이 시작되었습니다.**", num);
-    }
-
-    // 모든 플레이어의 포인트를 0으로 초기화하는 메서드
-    private void resetPlayerPoints() {
-        for (int i = 0; i < playerPoints.length; i++) {
-            playerPoints[i] = 0;
-        }
-    }
-
+    
+    // ==================주요 게임 기능====================
+    //게임 실행 메소드
     private void runGame(int num) {
         System.out.println("Received rungame message from client " + nickname);
-        eraseDrawing(whereIAm);
-        broadcast("**게임이 시작되었습니다.**", whereIAm);
-        selectDrawer(whereIAm);
+        eraseDrawing(RoomNum);
+        broadcast("**게임이 시작되었습니다.**", RoomNum);
+        selectDrawer(RoomNum);
     }
 
+    //플레이어중 술래 고르는 메소드
     private void selectDrawer(int num) {
         if (listWriters[num].size() > 0) {
             // 모든 클라이언트에 대해 술래를 정하지 않았다면 술래를 정함
@@ -268,28 +207,37 @@ public class ServerManager extends Thread {
                 // 현재 술래 다음 순서로 설정
                 currentPlayerIndex = (currentPlayerIndex + 1) % totalPlayers;
             }
-
+            //술래에게 제시어 전달
             PrintWriter drawer = listWriters[num].get(currentPlayerIndex);
             currentWord = getRandomWordFromFile();
             drawer.println("ㆍ당신이 그릴차례입니다. 제시어: <" + currentWord + ">");
             drawer.flush();
-
         }
     }
-
-    private void doMessage(String data, int num) {
-        if (gameStarted && selectingDrawer) {
-            if (data.equalsIgnoreCase(currentWord)) {
-                handleAnswer(data); // 방 번호(num)를 사용하지 않음
-                return;
-            }
+    
+    //다음 술래를 고르는 메소드
+	private void selectNextDrawer(int num) {
+        currentPlayerIndex++;
+        if (currentPlayerIndex >= listWriters[num].size()) {
+            currentPlayerIndex = 0;
         }
-        broadcast("[" + nickname + "]: " + data, num);
+        // 술래 선택 후에 새로운 술래에게만 제시어를 전송
+        sendWordToDrawer(num);
     }
+	
+	//다음 술래에게 제시어 전달
+    private void sendWordToDrawer(int num) {
+        if (listWriters[num].size() > 0) {
+            PrintWriter drawer = listWriters[num].get(currentPlayerIndex);
+            drawer.println("ㆍ당신이 그릴차례입니다. 제시어: <" + currentWord + ">");
+            drawer.flush();
+        }
+    }	
 
+    //제시어를 랜덤으로 고르는 메소드
     private String getRandomWordFromFile() {
         try {
-            String filePath = "src/ArtClue_Server/answer.txt";
+            String filePath = "src/ArtClue_Server/answer.txt"; //파일에서 가져오기
             BufferedReader reader = new BufferedReader(new FileReader(filePath, StandardCharsets.UTF_8));
             ArrayList<String> words = new ArrayList<>();
             String line;
@@ -297,7 +245,6 @@ public class ServerManager extends Thread {
             while ((line = reader.readLine()) != null) {
                 words.add(line);
             }
-
             if (!words.isEmpty()) {
                 Collections.shuffle(words);
                 return words.get(0);
@@ -311,41 +258,47 @@ public class ServerManager extends Thread {
         }
     }
 
+    //랜덤으로 선택된 제시어
     private void setCurrentWordFromRandomFile() {
         currentWord = getRandomWordFromFile();
     }
 
+    //정답기능을 위한 메소드
     private void handleAnswer(String answer) {
-        System.out.println("Received answer from client " + nickname + ": " + answer);
-
         if (currentWord == null) {
             System.out.println("currentWord is null. Initializing...");
             setCurrentWordFromRandomFile();
             return;
         }
-
         if (answer.trim().equalsIgnoreCase(currentWord.trim())) {
             System.out.println("Correct answer!");
 
             // 점수 증가 및 모든 클라이언트에게 알림
-            increasePlayerPoint(whereIAm); // 현재 클라이언트의 인덱스를 전달
-            broadcast("ㆍ[" + nickname + "]님이 정답을 맞혔습니다! [정답: "+ currentWord + "]\n" + ">" + nickname + "님의 현재 점수: " + playerPoints[whereIAm], whereIAm);
-
-            if (playerPoints[whereIAm] >= 3) {
-                broadcast("ㆍ[" + nickname + "]님의 승리!\n     --게임종료--", whereIAm);
+            increasePlayerPoint(RoomNum); // 현재 클라이언트의 인덱스를 전달
+            broadcast("ㆍ[" + nickname + "쿵야]님이 정답을 맞혔습니다! [정답: "+ currentWord + "]\n" + ">" + nickname + "쿵야님의 현재 점수: " + playerPoints[RoomNum], RoomNum);
+            //한 클라이언트가 3점 이상을 얻었을 경우 게임 종료
+            if (playerPoints[RoomNum] >= 3) {
+                broadcast("ㆍ[" + nickname + "쿵야]님의 승리!\n     --게임종료--", RoomNum);
                 endGame();
             } else {
                 setCurrentWordFromRandomFile();
-                selectNextDrawer(whereIAm);
+                selectNextDrawer(RoomNum);
                 
-                eraseDrawing(whereIAm);
+                eraseDrawing(RoomNum);
             }
-        } else {
+        } else { //정답이 아닌 경우 메세지 처리
             System.out.println("Incorrect answer." + currentWord + " " + answer);
-            broadcast("[" + nickname + "]: " + answer, whereIAm);
+            broadcast("[" + nickname + "]: " + answer, RoomNum);
         }
     }
 
+    // 모든 플레이어의 점수를 0으로 초기화하는 메서드
+    private void resetPlayerPoints() {
+        for (int i = 0; i < playerPoints.length; i++) {
+            playerPoints[i] = 0;
+        }
+    }
+    
     // 플레이어 점수 증가 메서드
     public void increasePlayerPoint(int playerIndex) {
         // playerIndex가 유효한 범위인지 확인
@@ -359,35 +312,7 @@ public class ServerManager extends Thread {
         }
     }
 
-	private void selectNextDrawer(int num) {
-        currentPlayerIndex++;
-        if (currentPlayerIndex >= listWriters[num].size()) {
-            currentPlayerIndex = 0;
-        }
-
-        // 술래 선택 후에 새로운 술래에게만 제시어를 전송
-        sendWordToDrawer(num);
-    }
-	
-	private void eraseDrawing(int num) {
-	    synchronized (listWriters) {
-	        for (PrintWriter writer : listWriters[num]) {
-	            writer.println("changeColor:0,0,0");
-	            writer.flush();
-	            
-	            writer.println("draw:erase");
-	            writer.flush();
-	        }
-	    }
-	}
-    private void sendWordToDrawer(int num) {
-        if (listWriters[num].size() > 0) {
-            PrintWriter drawer = listWriters[num].get(currentPlayerIndex);
-            drawer.println("ㆍ당신이 그릴차례입니다. 제시어: <" + currentWord + ">");
-            drawer.flush();
-        }
-    }
-
+    //게임 종료 메소드
     private void endGame() {
         System.out.println("게임이 종료되었습니다.");
         gameStarted = false;
@@ -399,7 +324,8 @@ public class ServerManager extends Thread {
         resetPlayerPoints();
         setCurrentWordFromRandomFile();
     }
-
+    //==========================================================
+    //그리기 기능
     private void doDraw(String points, int roomNum) {
         synchronized (listWriters) {
             for (PrintWriter writer : listWriters[roomNum]) {
@@ -408,7 +334,7 @@ public class ServerManager extends Thread {
             }
         }
     }
-
+    //지우기 기능
     private void doErase(int roomNum) {
         synchronized (listWriters) {
             for (PrintWriter writer : listWriters[roomNum]) {
@@ -418,10 +344,29 @@ public class ServerManager extends Thread {
         }
     }
 
-    private void addWriter(PrintWriter writer, int num) {
-        synchronized (listWriters) {
-            listWriters[num].add(writer);
+    //그림판 초기화 메소드
+	private void eraseDrawing(int num) {
+	    synchronized (listWriters) {
+	        for (PrintWriter writer : listWriters[num]) {
+	        	//펜 색상 검은색으로
+	            writer.println("changeColor:0,0,0");
+	            writer.flush();
+	            //그림판 초기화
+	            writer.println("draw:erase");
+	            writer.flush();
+	        }
+	    }
+	}
+	
+    //기본 메세지 처리
+    private void doMessage(String data, int num) {
+        if (gameStarted && selectingDrawer) {
+            if (data.equalsIgnoreCase(currentWord)) {
+                handleAnswer(data);
+                return;
+            }
         }
+        broadcast("[" + nickname + "]: " + data, num);
     }
 
     private void broadcast(String data, int num) {

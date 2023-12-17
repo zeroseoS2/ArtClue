@@ -1,6 +1,5 @@
 package ArtClue_Server;
 
-import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
@@ -18,15 +17,11 @@ public class ArtClue {
     public ArtClue() {
         for (int i = 0; i < 5; i++) {
             listWriters[i] = new ArrayList<PrintWriter>();
-            // FileRead 클래스를 사용하여 정답 목록을 읽어옴
-	        FileRead fileRead = new FileRead("src/ArtClue_Server/answer.txt");
-	        ArrayList<String> answerList = fileRead.getAnswer();
         }
-        new Chat(listWriters, answerList).start(); // Chat 클래스에 정답 리스트를 전달
+        new Chat(listWriters, answerList).start();
         new ServerInfoSender(listWriters).start();
         access();
     }
-    
 
     public void access() {
         try {
@@ -42,7 +37,6 @@ public class ArtClue {
                 BufferedReader buffereedReader =
                         new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
 
-                // read for what to do
                 String request = buffereedReader.readLine();
                 if (request.equals("login")) {
                     login(socket, buffereedReader);
@@ -56,11 +50,9 @@ public class ArtClue {
     }
 
     public void login(Socket socket, BufferedReader buffereedReader) {
-        System.out.println("로그인함");
+        System.out.println("로그인");
         new ServerManager(socket, buffereedReader, listWriters, answerList).start();
     }
-
-
 
     private static void consoleLog(String log) {
         System.out.println("[server " + Thread.currentThread().getId() + "] " + log);

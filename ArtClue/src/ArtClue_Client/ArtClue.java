@@ -20,13 +20,11 @@ import java.io.PrintWriter;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
-
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JColorChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -34,19 +32,15 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 
-
 public class ArtClue extends JFrame{
+	int i;
 	public Image screenImage;
 	public Graphics screenGraphic;
 	public ArtClue thisclass=this;
-    private Color newColor = Color.BLACK; //색상변경을 위함
-	private int mouseX, mouseY;//창 이동
-    private Color currentColor;
+    private int mouseX, mouseY;//창 이동
+    private Color currentColor = Color.BLACK;
 
-    public Color getCurrentColor() {
-        return currentColor;
-    }
-	//drawing board member
+	//그림판 변수
 	public Image iDrawing = null;
 	public Graphics gDrawing = null;
 	public int x,y;
@@ -67,7 +61,7 @@ public class ArtClue extends JFrame{
 	public JLabel lblProfile;
 	private int profileNum = 0;
 	
-	//main member group
+	//각 클라이언트 정보
 	public JLabel myInfo = new JLabel();
 	public JLabel lobyInfototal = new JLabel();
 	public JLabel lobyInfo = new JLabel();
@@ -76,33 +70,26 @@ public class ArtClue extends JFrame{
 	public JButton Room[] = new JButton[4];
 	public JScrollPane chatSP = new JScrollPane(chatArea,JScrollPane.VERTICAL_SCROLLBAR_NEVER,JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
-	//Communication
+	//소켓
 	public Socket socket=null;
 	public PrintWriter pw=null;
 	public BufferedReader br = null;
 
-	//game member group
+	//게임 관련 변수 
 	public JPanel DrawArea = new JPanel();
 	public JLabel Roomnum = new JLabel();
 	public JLabel Roompeople = new JLabel();
 	public JButton GoBack = new JButton(new ImageIcon(Main.class.getResource("/Image/backbtn.png")));//돌아가기
 	public String nickname=null;
 	public JLabel nicknamelabel = new JLabel();//gamepage에서 nickname
-	public int WhereIAm=0;
+	public int RoomNum=0;
 	public JButton Start = new JButton(new ImageIcon(Main.class.getResource("/Image/startbtn.png")));
 	public JButton colorButton = new JButton(new ImageIcon(Main.class.getResource("/Image/ColorChange.png")));
-	public JButton Erase = new JButton(new ImageIcon(Main.class.getResource("/Image/Eraser.png")));
-
-	int i;
-
-    public void startApplication() {
-        Music introMusic = new Music("src/Music/CatchMind.wav", true);
-        introMusic.start();
-    }
+	public JButton Eraser = new JButton(new ImageIcon(Main.class.getResource("/Image/Eraser.png")));
 
 	public ArtClue() {
 		this.setUndecorated(true);
-		this.setTitle("Catch Mind");
+		this.setTitle("ArtClue");
 		this.setSize(Main.SCREEN_WIDTH, Main.SCREEN_HEIGHT);
 		this.setResizable(false);
 		this.setLocationRelativeTo(null);
@@ -110,8 +97,6 @@ public class ArtClue extends JFrame{
 		this.setVisible(true);
 		this.setBackground(new Color(0, 0, 0, 0));
 		getContentPane().setLayout(null);
-
-	    currentColor = Color.BLACK;
 
 		//창 이동
 		addMouseListener(new MouseAdapter() {
@@ -159,8 +144,7 @@ public class ArtClue extends JFrame{
         });
         getContentPane().add(colorButton);
         
-        //loginpage
-        //
+        //시작화면 컴포넌트 정리
 		//ArtClue 로고
 		title.setVisible(true);
 		title.setBounds(520, 120, 200, 200);
@@ -213,7 +197,7 @@ public class ArtClue extends JFrame{
 		            nicknamelabel.setText(nickname);
 					JOptionPane.showMessageDialog(null, "대기실로 이동합니다", "서버 접속 완료", JOptionPane.INFORMATION_MESSAGE);
 					//메인페이지로 이동
-					goLoby();
+					goLobby();
 
 					new ArtClueReceiver(socket,thisclass).start();
 				}
@@ -225,8 +209,7 @@ public class ArtClue extends JFrame{
 		});
 		getContentPane().add(loginButton);
 		
-		//mainpage
-		//
+		//로비화면 컴포넌트
 		//프로필 설정
 		profileImage=getProfileImage(profileNum);
 		lblProfile =new JLabel(profileImage);
@@ -258,7 +241,7 @@ public class ArtClue extends JFrame{
 		chatInput.setVisible(false);
 		chatInput.setBounds(807,672,400,30);
 		chatInput.setOpaque(false);
-		chatInput.setFont(new Font("맑은 고딕",Font.BOLD,15));
+		chatInput.setFont(new Font("맑은 고딕",Font.BOLD,17));
 		chatInput.setForeground(Color.WHITE);
 		chatInput.addKeyListener(new KeyAdapter() {
 			@Override
@@ -300,10 +283,10 @@ public class ArtClue extends JFrame{
 				int temp = i+1;
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
-					pw.println("quit:" + WhereIAm);
+					pw.println("quit:" + RoomNum);
 					pw.println("join:" + Integer.toString(temp) + ":" + nickname);
-					WhereIAm = temp;
-					Roomnum.setText(Integer.toString(WhereIAm));
+					RoomNum = temp;
+					Roomnum.setText(Integer.toString(RoomNum));
 					goGame();
 
 					//drawing board show
@@ -328,9 +311,8 @@ public class ArtClue extends JFrame{
 		myInfo.setForeground(Color.BLACK);
 		getContentPane().add(myInfo);
 
-		//gamepage
-		//
-		//nickname
+		//게임 화면 컴포넌트
+		//사용자 이름
 		nicknamelabel.setBounds(320,36,170,25);
 		nicknamelabel.setVisible(false);
 		nicknamelabel.setFont(new Font("맑은 고딕",Font.BOLD,25));
@@ -349,7 +331,7 @@ public class ArtClue extends JFrame{
 		Roompeople.setForeground(Color.BLACK);
 		Roompeople.setText("?");
 		getContentPane().add(Roompeople);
-		//그림판
+		//그림판 그리기
 		DrawArea.setVisible(false);
 		DrawArea.setOpaque(false);
 		DrawArea.setBounds(82,205,540,420);
@@ -363,7 +345,7 @@ public class ArtClue extends JFrame{
 			public void mouseDragged(MouseEvent me) {
 				if (me.getModifiersEx() != InputEvent.BUTTON1_DOWN_MASK)
 					return;
-				String msg = "draw:"+x+":"+y+":"+me.getX()+":"+me.getY()+":"+WhereIAm;
+				String msg = "draw:"+x+":"+y+":"+me.getX()+":"+me.getY()+":"+RoomNum;
 				pw.println(msg);
 
 				x = me.getX();
@@ -372,19 +354,19 @@ public class ArtClue extends JFrame{
 		});
 		getContentPane().add(DrawArea);
 		//지우개 버튼
-		Erase.setVisible(false);
-		Erase.setBounds(545,635, 88,50);
-		Erase.setBorderPainted(false);
-		Erase.setContentAreaFilled(false);
-		Erase.setFocusPainted(false);
-		Erase.addMouseListener(new MouseAdapter() {
+		Eraser.setVisible(false);
+		Eraser.setBounds(545,635, 88,50);
+		Eraser.setBorderPainted(false);
+		Eraser.setContentAreaFilled(false);
+		Eraser.setFocusPainted(false);
+		Eraser.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
-				pw.println("draw:erase:" + WhereIAm);
+				pw.println("draw:erase:" + RoomNum);
 				pw.flush();
 			}
 		});
-		getContentPane().add(Erase);
+		getContentPane().add(Eraser);
 		//뒤로가기 버튼
 		GoBack.setVisible(false);
 		GoBack.setBounds(1050, 33, 157, 62);
@@ -394,10 +376,10 @@ public class ArtClue extends JFrame{
 		GoBack.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
-				pw.println("quit:"+WhereIAm);
+				pw.println("quit:"+RoomNum);
 				pw.println("join:0");
-				WhereIAm=0;
-				goLoby();
+				RoomNum=0;
+				goLobby();
 			}
 		});
 		getContentPane().add(GoBack);
@@ -410,11 +392,8 @@ public class ArtClue extends JFrame{
 		Start.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
-		        System.out.println("Start button clicked!");
-
 		        // 기존의 메시지 전송 로직
-		        pw.println("rungame:" + WhereIAm);
-
+		        pw.println("rungame:" + RoomNum);
 		        chatInput.setText("");
 		    }
 		});
@@ -429,7 +408,7 @@ public class ArtClue extends JFrame{
 			@Override
 			public void mousePressed(MouseEvent e) {
 				try {
-					pw.println("quit:"+WhereIAm);
+					pw.println("quit:"+RoomNum);
 				}
 				catch(Exception e1) {
 
@@ -439,8 +418,13 @@ public class ArtClue extends JFrame{
 		});
 		getContentPane().add(exit);
 	}
-
-	public void goLoby(){
+	//음악 재생
+    public void startApplication() {
+        Music introMusic = new Music("src/Music/CatchMind.wav", true);
+        introMusic.start();
+    }
+    //로비 화면 컴포넌트 정리
+	public void goLobby(){
 		//main member visible
 		lobyInfo.setVisible(true);
 		lobyInfototal.setVisible(true);
@@ -462,7 +446,7 @@ public class ArtClue extends JFrame{
 		Roomnum.setVisible(false);
 		Roompeople.setVisible(false);
 		GoBack.setVisible(false);
-		Erase.setVisible(false);
+		Eraser.setVisible(false);
 		DrawArea.setVisible(false);
 		Start.setVisible(false);
 		nicknamelabel.setVisible(false);
@@ -471,7 +455,7 @@ public class ArtClue extends JFrame{
 		//채팅방 초기화
 	    chatArea.setText("");
 	}
-
+	//게임 화면 컴포넌트 정리
 	public void goGame() {
 		//main member visible
 		chatInput.setVisible(true);
@@ -483,7 +467,7 @@ public class ArtClue extends JFrame{
 		Roompeople.setVisible(true);
 		GoBack.setVisible(true);
 		DrawArea.setVisible(true);
-		Erase.setVisible(true);
+		Eraser.setVisible(true);
 		Start.setVisible(true);
 		colorButton.setVisible(true);
 		nicknamelabel.setVisible(true);
@@ -501,7 +485,6 @@ public class ArtClue extends JFrame{
 			Room[i].setVisible(false);
 		//change backGround
 		BackGroundImage = new ImageIcon(Main.class.getResource("/Image/gamepage.png")).getImage();
-
 		//채팅방 초기화
 	    chatArea.setText("");
 	}
@@ -525,20 +508,7 @@ public class ArtClue extends JFrame{
 	        e.printStackTrace();
 	    }
 	}
-	// 사용자 정보를 담는 클래스
-	class UserInfo {
-	    private String name;
-
-
-	    public UserInfo(String name) {
-	        this.name = name;
-	    }
-
-	    public String getName() {
-	        return name;
-	    }
-	}
-
+	//현재 접속자 수 측정을 위한 메소드
 	public void refreshInfo(String info[]) {
 		int total = 0;
 		for(int i=1;i<6;i++) {
@@ -547,7 +517,7 @@ public class ArtClue extends JFrame{
 		lobyInfo.setText(info[1]);
 		lobyInfototal.setText(Integer.toString(total));
 
-		Roompeople.setText(info[WhereIAm+1]);
+		Roompeople.setText(info[RoomNum+1]);
 	}
 
 	@Override
@@ -559,23 +529,26 @@ public class ArtClue extends JFrame{
 	}
 	public void screenDraw(Graphics g) {
 		g.drawImage(BackGroundImage, 0, 0, null);
-		if(WhereIAm!=0) {
+		if(RoomNum!=0) {
 			g.drawImage(iDrawing,82,205,null);
 		}
 		paintComponents(g);
 		this.repaint();
 	}
 
-	// ArtClue 클래스 내부에 추가
-	public void setColor(Color color) {
+    public Color getCurrentColor() {
+        return currentColor;
+    }
+    //색상 지정
+    public void setColor(Color color) {
 	    this.currentColor = color;
 	    gDrawing.setColor(color);
 	    repaint();
 	}
 
-	// 메소드 추가: 다른 클라이언트에게 색상 전송
+	//다른 클라이언트에게 색상 전송
 	public void sendColorToOtherClients(Color color) {
-	    pw.println("changeColor:" + color.getRed() + "," + color.getGreen() + "," + color.getBlue() + ":" + WhereIAm);
+	    pw.println("changeColor:" + color.getRed() + "," + color.getGreen() + "," + color.getBlue() + ":" + RoomNum);
 	}
 
 	public synchronized void updateColor(Color newColor) {
@@ -583,6 +556,7 @@ public class ArtClue extends JFrame{
 	    gDrawing.setColor(currentColor);
 	    repaint();
 	}
+	
 	//프로필 바꿔주는 기능
 	public void changeProfileImage(int index) {
 		profileNum = index;
@@ -593,6 +567,7 @@ public class ArtClue extends JFrame{
 	public int getProfileNum() {
 		return profileNum;
 	}
+	
 	//프로필 사진 리턴
 	private ImageIcon getProfileImage(int profileNum) {
 		 return new ImageIcon(new ImageIcon(ProfileFrame.class.getResource(ProfileFrame.PROFILEPATH + "/profile" + profileNum + ".png")).getImage().getScaledInstance(62, 72, java.awt.Image.SCALE_SMOOTH));

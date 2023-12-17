@@ -5,15 +5,13 @@ import java.util.*;
 
 public class Chat extends Thread{
 	private ArrayList<PrintWriter>[] listWriters;
-    private ArrayList<String> answerList[];
-
-	public Chat(ArrayList<PrintWriter>[] listWriters) {
+	
+    public Chat(ArrayList<PrintWriter>[] listWriters) {
 		// TODO Auto-generated constructor stub
 		this.listWriters = listWriters;
 	}
 	 public Chat(ArrayList<PrintWriter> listWriters[], ArrayList<String> answerList[]) {
 	        this.listWriters = listWriters;
-	        this.answerList = answerList;
 	    }
 
 	public void run() {
