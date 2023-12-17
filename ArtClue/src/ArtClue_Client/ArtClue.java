@@ -59,7 +59,7 @@ public class ArtClue extends JFrame{
 	
 	//login and connection
 	public RoundJTextField name = new RoundJTextField(1);
-	public RoundButton loginButton = new RoundButton(new ImageIcon(Main.class.getResource("/Image/loginbtn.png")));
+	public JButton loginButton = new JButton(new ImageIcon(Main.class.getResource("/Image/loginbtn.png")));
 	public JTextField ServerIP = new JTextField("127.0.0.1");
 	
 	//Loby group
@@ -81,10 +81,10 @@ public class ArtClue extends JFrame{
 	public JLabel Roomnum = new JLabel();
 	public JLabel Roompeople = new JLabel();
 	public JButton Erase = new JButton(new ImageIcon(Main.class.getResource("/Image/Erase.png")));
-	public JButton GoBack = new JButton(new ImageIcon(Main.class.getResource("/Image/GoBack.png")));
+	public JButton GoBack = new JButton(new ImageIcon(Main.class.getResource("/Image/backbtn.png")));
 	public String nickname=null;
 	public int WhereIAm=0;
-	public JButton Start = new JButton("Start");
+	public JButton Start = new JButton(new ImageIcon(Main.class.getResource("/Image/startbtn.png")));
 
 	int i;
 	public ArtClue() {
@@ -160,11 +160,16 @@ public class ArtClue extends JFrame{
 		
 		
 		ServerIP.setVisible(true);
-		ServerIP.setBounds(0,0,100,30);
+		ServerIP.setBounds(8,0,80,30);
+		ServerIP.setBorder(null);
+		ServerIP.setBackground(new Color(0,0,0,0));
 		getContentPane().add(ServerIP);
 		
 		loginButton.setVisible(true);
 		loginButton.setBounds(637, 488, 70, 60);
+		loginButton.setBorderPainted(false);
+		loginButton.setContentAreaFilled(false);
+		loginButton.setFocusPainted(false);
 		loginButton.addActionListener(new ActionListener() {
 			//Process after clicked LoginButton
 			@Override
@@ -253,11 +258,12 @@ public class ArtClue extends JFrame{
 		chatSP.getViewport().setOpaque(false);
 		chatSP.setVisible(false);
 		chatSP.setBounds(807,168,400,506);
+		chatSP.setBorder(null);
 		chatSP.getVerticalScrollBar().setValue(chatSP.getVerticalScrollBar().getMaximum());
 		getContentPane().add(chatSP);
 
 		for(i=0;i<4;i++) {
-			Room[i] = new JButton(new ImageIcon(Main.class.getResource("/Image/Room"+Integer.toString(i+1)+".png")));
+			Room[i] = new JButton(new ImageIcon(Main.class.getResource("/Image/room"+Integer.toString(i+1)+".png")));
 			Room[i].setVisible(false);
 			Room[i].setBorderPainted(false);
 			Room[i].setContentAreaFilled(false);
@@ -282,12 +288,12 @@ public class ArtClue extends JFrame{
 			});
 			getContentPane().add(Room[i]);
 		}
-		Room[0].setBounds(110,250,300,150);
-		Room[1].setBounds(450,250,300,150);
-		Room[2].setBounds(110,440,300,150);
-		Room[3].setBounds(450,440,300,150);
+		Room[0].setBounds(130,240,246,148);
+		Room[1].setBounds(440,240,246,148);
+		Room[2].setBounds(130,423,246,148);
+		Room[3].setBounds(440,423,246,148);
 		
-		myInfo.setBounds(900,42,300,50);
+		myInfo.setBounds(500,42,300,50);
 		myInfo.setVisible(false);
 		myInfo.setFont(new Font("맑은 고딕",Font.BOLD,40));
 		myInfo.setForeground(Color.WHITE);
@@ -332,7 +338,7 @@ public class ArtClue extends JFrame{
 		getContentPane().add(DrawArea);
 		
 		GoBack.setVisible(false);
-		GoBack.setBounds(1120, 20, 64, 64);
+		GoBack.setBounds(1050, 33, 157, 62);
 		GoBack.setBorderPainted(false);
 		GoBack.setContentAreaFilled(false);
 		GoBack.setFocusPainted(false);
@@ -346,8 +352,11 @@ public class ArtClue extends JFrame{
 		});
 		getContentPane().add(GoBack);
 
-		Start.setBounds(550,10, 100, 30);
+		Start.setBounds(858,33, 157, 62);
 		Start.setVisible(false);
+		Start.setBorderPainted(false);
+		Start.setContentAreaFilled(false);
+		Start.setFocusPainted(false);
 		Start.addMouseListener(new MouseAdapter() {
 			public void mousePressed(MouseEvent e) {
 		        System.out.println("Start button clicked!");
@@ -362,7 +371,10 @@ public class ArtClue extends JFrame{
 
 	
 		Erase.setVisible(false);
-		Erase.setBounds(25,636, 60,60);
+		Erase.setBounds(535,636, 60,60);
+		Erase.setBorderPainted(false);
+		Erase.setContentAreaFilled(false);
+		Erase.setFocusPainted(false);
 		Erase.addMouseListener(new MouseAdapter() {
 			public void mousePressed(MouseEvent e) {
 				pw.println("draw:erase:" + WhereIAm);
@@ -399,7 +411,7 @@ public class ArtClue extends JFrame{
 		ServerIP.setVisible(false);
 		loginButton.setVisible(false);
 		colorButton.setVisible(false);
-		
+		exit.setVisible(true);
 		//ruby member visible
 		lobyInfo.setVisible(true);
 		lobyInfototal.setVisible(true);
@@ -418,7 +430,7 @@ public class ArtClue extends JFrame{
 		Start.setVisible(false);
 		
 		//change backGround
-		BackGroundImage = new ImageIcon(Main.class.getResource("/Image/LobyImage.png")).getImage();
+		BackGroundImage = new ImageIcon(Main.class.getResource("/Image/mainpage.png")).getImage();
 
 		//채팅방 초기화
 	    chatArea.setText("");
@@ -431,7 +443,7 @@ public class ArtClue extends JFrame{
 		name.setVisible(false);
 		ServerIP.setVisible(false);
 		loginButton.setVisible(false);
-
+		exit.setVisible(false);
 		
 		//ruby member invisible
 		lobyInfo.setVisible(false);
