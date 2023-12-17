@@ -240,18 +240,18 @@ public class ArtClue extends JFrame{
 
 		lobyInfo.setVisible(false);
 		lobyInfo.setText("?");
-		lobyInfo.setBounds(440,18,26,26);
+		lobyInfo.setBounds(440,54,26,26);
 		lobyInfo.setFont(new Font("맑은 고딕",Font.BOLD,20));
 		lobyInfo.setForeground(Color.BLACK);
 		getContentPane().add(lobyInfo);
 
 		lobyInfototal.setVisible(false);
 		lobyInfototal.setText("?");
-		lobyInfototal.setBounds(440,54,26,26);
+		lobyInfototal.setBounds(440,18,26,26);
 		lobyInfototal.setFont(new Font("맑은 고딕",Font.BOLD,20));
 		lobyInfototal.setForeground(Color.BLACK);
 		getContentPane().add(lobyInfototal);
-
+		
 		chatInput.setVisible(false);
 		chatInput.setBounds(807,672,400,30);
 		chatInput.setOpaque(false);
