@@ -38,7 +38,7 @@ public class ArtClue extends JFrame{
 	public Image screenImage;
 	public Graphics screenGraphic;
 	public ArtClue thisclass=this;
-    private Color newColor = Color.BLACK; // 색상변경을 위함
+    private Color newColor = Color.BLACK; //색상변경을 위함
 	private int mouseX, mouseY;//창 이동
     private Color currentColor;
 
@@ -49,9 +49,11 @@ public class ArtClue extends JFrame{
 	public Image iDrawing = null;
 	public Graphics gDrawing = null;
 	public int x,y;
-
+	//배경
 	public Image BackGroundImage = new ImageIcon(Main.class.getResource("/Image/background.png")).getImage();
+	//나가기 버튼
 	public JButton exit = new JButton(new ImageIcon(Main.class.getResource("/Image/exit.png")));
+	//ArtClue
 	public JLabel title = new JLabel(new ImageIcon(Main.class.getResource("/Image/title.png")));
 
 	//login and connection
@@ -59,11 +61,12 @@ public class ArtClue extends JFrame{
 	public JButton loginButton = new JButton(new ImageIcon(Main.class.getResource("/Image/loginbtn.png")));
 	public JTextField ServerIP = new JTextField("127.0.0.1");
 
-	//Loby group
+	//프로필 사진
 	public ImageIcon profileImage;
 	public JLabel lblProfile;
 	private int profileNum = 0;
-
+	
+	//main member group
 	public JLabel myInfo = new JLabel();
 	public JLabel lobyInfototal = new JLabel();
 	public JLabel lobyInfo = new JLabel();
@@ -71,7 +74,7 @@ public class ArtClue extends JFrame{
 	public JTextArea chatArea = new JTextArea();
 	public JButton Room[] = new JButton[4];
 	public JScrollPane chatSP = new JScrollPane(chatArea,JScrollPane.VERTICAL_SCROLLBAR_NEVER,JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-	public JButton colorButton = new JButton(new ImageIcon(Main.class.getResource("/Image/ColorChange.png")));
+
 	//Communication
 	public Socket socket=null;
 	public PrintWriter pw=null;
@@ -81,13 +84,14 @@ public class ArtClue extends JFrame{
 	public JPanel DrawArea = new JPanel();
 	public JLabel Roomnum = new JLabel();
 	public JLabel Roompeople = new JLabel();
-	public JButton Erase = new JButton(new ImageIcon(Main.class.getResource("/Image/Eraser.png")));
 	public JButton GoBack = new JButton(new ImageIcon(Main.class.getResource("/Image/backbtn.png")));
 	public String nickname=null;
 	public JLabel nicknamelabel = new JLabel();
 	public int WhereIAm=0;
 	public JButton Start = new JButton(new ImageIcon(Main.class.getResource("/Image/startbtn.png")));
-
+	public JButton colorButton = new JButton(new ImageIcon(Main.class.getResource("/Image/ColorChange.png")));
+	public JButton Erase = new JButton(new ImageIcon(Main.class.getResource("/Image/Eraser.png")));
+	
 	int i;
 
     public void startApplication() {
@@ -169,7 +173,6 @@ public class ArtClue extends JFrame{
 		name.requestFocus();
 		getContentPane().add(name);
 
-
 		ServerIP.setVisible(true);
 		ServerIP.setBounds(8,0,80,30);
 		ServerIP.setBorder(null);
@@ -221,7 +224,7 @@ public class ArtClue extends JFrame{
 		getContentPane().add(loginButton);
 
 
-		//////////// LobyButton From Here
+		//////////// mainButton From Here
 		////////////
 		////////////
 		profileImage=getProfileImage(profileNum);
@@ -404,7 +407,6 @@ public class ArtClue extends JFrame{
 		});
 		getContentPane().add(Start);
 
-
 		Erase.setVisible(false);
 		Erase.setBounds(545,635, 88,50);
 		Erase.setBorderPainted(false);
@@ -418,7 +420,6 @@ public class ArtClue extends JFrame{
 			}
 		});
 		getContentPane().add(Erase);
-
 
 		//exit button
 		exit.setVisible(true);
