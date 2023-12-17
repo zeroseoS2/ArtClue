@@ -70,7 +70,7 @@ public class ArtClue extends JFrame{
 	public JTextArea chatArea = new JTextArea();
 	public JButton Room[] = new JButton[4];
 	public JScrollPane chatSP = new JScrollPane(chatArea,JScrollPane.VERTICAL_SCROLLBAR_NEVER,JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-	public JButton colorButton = new JButton("Change");
+	public JButton colorButton = new JButton(new ImageIcon(Main.class.getResource("/Image/ColorChange.png")));
 	//Communication
 	public Socket socket=null;
 	public PrintWriter pw=null;
@@ -80,7 +80,7 @@ public class ArtClue extends JFrame{
 	public JPanel DrawArea = new JPanel();
 	public JLabel Roomnum = new JLabel();
 	public JLabel Roompeople = new JLabel();
-	public JButton Erase = new JButton(new ImageIcon(Main.class.getResource("/Image/Erase.png")));
+	public JButton Erase = new JButton(new ImageIcon(Main.class.getResource("/Image/Eraser.png")));
 	public JButton GoBack = new JButton(new ImageIcon(Main.class.getResource("/Image/backbtn.png")));
 	public String nickname=null;
 	public int WhereIAm=0;
@@ -129,7 +129,10 @@ public class ArtClue extends JFrame{
 		
         // 색상 변경 버튼 추가
 		colorButton.setVisible(false);
-		colorButton.setBounds(90, 638, 100, 30);
+		colorButton.setBounds(73, 635, 375, 50);
+		colorButton.setBorderPainted(false);
+		colorButton.setContentAreaFilled(false);
+		colorButton.setFocusPainted(false);
 		colorButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
                 // 색상 선택 다이얼로그 띄우기
@@ -371,7 +374,7 @@ public class ArtClue extends JFrame{
 
 	
 		Erase.setVisible(false);
-		Erase.setBounds(535,636, 60,60);
+		Erase.setBounds(545,635, 88,50);
 		Erase.setBorderPainted(false);
 		Erase.setContentAreaFilled(false);
 		Erase.setFocusPainted(false);
