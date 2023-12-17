@@ -39,7 +39,6 @@ public class ProfileFrame extends JFrame{
 		panel.setBackground(Color.WHITE);
 		scrollPane.setViewportView(panel);
 
-//		File path = new File(PROFILEPATH);
 		File path = new File(ProfileFrame.class.getResource(PROFILEPATH).getFile());
         File[] files = path.listFiles();
 		int numberOfProfile = path.list().length;
@@ -50,7 +49,6 @@ public class ProfileFrame extends JFrame{
 
 		for (int i = 0; i < numberOfProfile; i++) {
 			lblProfile[i] = new JLabel(getProfileImage(i));
-//			lblProfile[i] = new JLabel(getProfileImage(files[i]));
 			lblProfile[i].setForeground(Color.WHITE);
 			lblProfile[i].setText(""+i);
 			lblProfile[i].addMouseListener(new MouseAdapter() {

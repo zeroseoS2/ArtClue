@@ -51,10 +51,7 @@ public class ArtClue extends JFrame{
 	public int x,y;
 
 	public Image BackGroundImage = new ImageIcon(Main.class.getResource("/Image/background.png")).getImage();
-
-	//maybe never removed
 	public JButton exit = new JButton(new ImageIcon(Main.class.getResource("/Image/exit.png")));
-
 	public JLabel title = new JLabel(new ImageIcon(Main.class.getResource("/Image/title.png")));
 
 	//login and connection
@@ -87,6 +84,7 @@ public class ArtClue extends JFrame{
 	public JButton Erase = new JButton(new ImageIcon(Main.class.getResource("/Image/Eraser.png")));
 	public JButton GoBack = new JButton(new ImageIcon(Main.class.getResource("/Image/backbtn.png")));
 	public String nickname=null;
+	public JLabel nicknamelabel = new JLabel();
 	public int WhereIAm=0;
 	public JButton Start = new JButton(new ImageIcon(Main.class.getResource("/Image/startbtn.png")));
 
@@ -199,7 +197,7 @@ public class ArtClue extends JFrame{
 		            System.out.println(socket);
 
 		            //this is login process
-		            //send my nickname and join to ruby chat room
+		            //send my nickname and join to loby chat room
 		            pw.println("login");
 		            String request = "join:" + "0" +"\r\n";
 		            System.out.println(name.getText());
@@ -207,7 +205,7 @@ public class ArtClue extends JFrame{
 		            pw.println(request);
 		            nickname=name.getText()+"쿵야";
 		            myInfo.setText(nickname);
-
+		            nicknamelabel.setText(nickname);
 					JOptionPane.showMessageDialog(null, "대기실로 이동합니다", "서버 접속 완료", JOptionPane.INFORMATION_MESSAGE);
 
 					goLoby();
@@ -226,8 +224,6 @@ public class ArtClue extends JFrame{
 		//////////// LobyButton From Here
 		////////////
 		////////////
-
-//		lblProfile =  new JLabel(new ImageIcon(Main.class.getResource("/profile/profile0.png")));
 		profileImage=getProfileImage(profileNum);
 		lblProfile =new JLabel(profileImage);
 		lblProfile.addMouseListener(new MouseAdapter() {
@@ -238,7 +234,6 @@ public class ArtClue extends JFrame{
 				System.out.println(profileImage);
 			}
 		});
-//		changeProfileImage(profileNum);
 		lblProfile.setBounds(857, 14, 62, 72);
 		lblProfile.setVisible(false);
 		getContentPane().add(lblProfile);
@@ -334,16 +329,22 @@ public class ArtClue extends JFrame{
 		//gameroom
 		/////////////////////////
 		//////////////////////////
+		nicknamelabel.setBounds(320,36,170,25);
+		nicknamelabel.setVisible(false);
+		nicknamelabel.setFont(new Font("맑은 고딕",Font.BOLD,25));
+		nicknamelabel.setForeground(Color.BLACK);
+		getContentPane().add(nicknamelabel);
+		
 		Roomnum.setVisible(false);
-		Roomnum.setBounds(500,10,100,40);
-		Roomnum.setFont(new Font("맑은 고딕",Font.BOLD,30));
-		Roomnum.setForeground(Color.WHITE);
+		Roomnum.setBounds(690,18,26,26);
+		Roomnum.setFont(new Font("맑은 고딕",Font.BOLD,20));
+		Roomnum.setForeground(Color.BLACK);
 		getContentPane().add(Roomnum);
 
 		Roompeople.setVisible(false);
-		Roompeople.setBounds(500,55,100,40);
-		Roompeople.setFont(new Font("맑은 고딕",Font.BOLD,30));
-		Roompeople.setForeground(Color.WHITE);
+		Roompeople.setBounds(690,54,26,26);
+		Roompeople.setFont(new Font("맑은 고딕",Font.BOLD,20));
+		Roompeople.setForeground(Color.BLACK);
 		Roompeople.setText("?");
 		getContentPane().add(Roompeople);
 
@@ -362,11 +363,9 @@ public class ArtClue extends JFrame{
 					return;
 				String msg = "draw:"+x+":"+y+":"+me.getX()+":"+me.getY()+":"+WhereIAm;
 				pw.println(msg);
-				//System.out.println(msg);
 
 				x = me.getX();
 				y = me.getY();
-				//drawing is not allowed in client self
 			}
 		});
 		getContentPane().add(DrawArea);
@@ -445,13 +444,14 @@ public class ArtClue extends JFrame{
 	public void goLoby(){
 		//main member invisible
 		lblProfile.setVisible(true);
+		lblProfile.setBounds(857, 14, 62, 72);
 		title.setVisible(false);
 		name.setVisible(false);
 		ServerIP.setVisible(false);
 		loginButton.setVisible(false);
 		colorButton.setVisible(false);
 		exit.setVisible(true);
-		//ruby member visible
+		//loby member visible
 		lobyInfo.setVisible(true);
 		lobyInfototal.setVisible(true);
 		chatInput.setVisible(true);
@@ -467,13 +467,12 @@ public class ArtClue extends JFrame{
 		Erase.setVisible(false);
 		DrawArea.setVisible(false);
 		Start.setVisible(false);
-
+		nicknamelabel.setVisible(false);
 		//change backGround
 		BackGroundImage = new ImageIcon(Main.class.getResource("/Image/mainpage.png")).getImage();
 
 		//채팅방 초기화
 	    chatArea.setText("");
-
 	}
 
 	public void goGame() {
@@ -483,14 +482,14 @@ public class ArtClue extends JFrame{
 		ServerIP.setVisible(false);
 		loginButton.setVisible(false);
 		exit.setVisible(false);
-		lblProfile.setVisible(false);
-		//ruby member invisible
+		lblProfile.setVisible(true);
+		lblProfile.setBounds(240, 14, 62, 72);
+		//loby member invisible
 		lobyInfo.setVisible(false);
 		lobyInfototal.setVisible(false);
 		chatInput.setVisible(true);
 		chatSP.setVisible(true);
-		myInfo.setVisible(true);
-
+		myInfo.setVisible(false);
 		for(int i=0;i<4;i++)
 			Room[i].setVisible(false);
 
@@ -502,7 +501,7 @@ public class ArtClue extends JFrame{
 		Erase.setVisible(true);
 		Start.setVisible(true);
 		colorButton.setVisible(true);
-
+		nicknamelabel.setVisible(true);
 		//change backGround
 		BackGroundImage = new ImageIcon(Main.class.getResource("/Image/gamepage.png")).getImage();
 
