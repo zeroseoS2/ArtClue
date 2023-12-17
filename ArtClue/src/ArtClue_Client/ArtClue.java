@@ -87,10 +87,13 @@ public class ArtClue extends JFrame{
 	public JButton Start = new JButton(new ImageIcon(Main.class.getResource("/Image/startbtn.png")));
 
 	int i;
+	
+    public void startApplication() {
+        Music introMusic = new Music("src/Music/CatchMind.wav", true);
+        introMusic.start();
+    }	
+	
 	public ArtClue() {
-		//Music introMusic = new Music("CandyLand.mp3", true);
-		//introMusic.start();		
-		
 		this.setUndecorated(true);
 		this.setTitle("Catch Mind");
 		this.setSize(Main.SCREEN_WIDTH, Main.SCREEN_HEIGHT);
