@@ -26,6 +26,7 @@ import javax.swing.JButton;
 import javax.swing.JColorChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -91,7 +92,8 @@ public class ArtClue extends JFrame{
 	public JButton Start = new JButton(new ImageIcon(Main.class.getResource("/Image/startbtn.png")));
 	public JButton colorButton = new JButton(new ImageIcon(Main.class.getResource("/Image/ColorChange.png")));
 	public JButton Erase = new JButton(new ImageIcon(Main.class.getResource("/Image/Eraser.png")));
-	
+
+
 	int i;
 
     public void startApplication() {
@@ -530,7 +532,19 @@ public class ArtClue extends JFrame{
 	        e.printStackTrace();
 	    }
 	}
+	// 사용자 정보를 담는 클래스
+	class UserInfo {
+	    private String name;
 
+
+	    public UserInfo(String name) {
+	        this.name = name;
+	    }
+
+	    public String getName() {
+	        return name;
+	    }
+	}
 
 	public void refreshInfo(String info[]) {
 		int total = 0;
