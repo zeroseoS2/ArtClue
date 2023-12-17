@@ -14,21 +14,4 @@
 	<natures>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
-	<linkedResources>
-		<link>
-			<name>src/Image/ColorChange.png</name>
-			<type>1</type>
-			<locationURI>PARENT-4-PROJECT_LOC/Desktop/ColorChange.png</locationURI>
-		</link>
-		<link>
-			<name>src/Image/Eraser.png</name>
-			<type>1</type>
-			<locationURI>PARENT-4-PROJECT_LOC/Desktop/Eraser.png</locationURI>
-		</link>
-		<link>
-			<name>src/Image/Report.png</name>
-			<type>1</type>
-			<locationURI>PARENT-4-PROJECT_LOC/Desktop/Report.png</locationURI>
-		</link>
-	</linkedResources>
 </projectDescription>
