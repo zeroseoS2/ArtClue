@@ -6,7 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-
+//파일 읽어오는 클래스
 public class FileRead {
 
     private File file;
@@ -17,7 +17,6 @@ public class FileRead {
     public FileRead(String filePath) {
         this.dir = filePath;
     }
-
 
 	public void read() {
         makeList();

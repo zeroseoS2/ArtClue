@@ -7,9 +7,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.HashSet;
-import java.util.Set;
-import javax.swing.DefaultListModel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
@@ -112,7 +109,6 @@ public class ArtClueReceiver extends Thread {
         }
     }
 
-
     // 서버로 변경된 색상 정보 전송
     private void sendColorToServer(Color newColor) {
         try {
@@ -125,7 +121,6 @@ public class ArtClueReceiver extends Thread {
     }
 
 
- // ArtClueReceiver 클래스 내부의 updateColor 메서드 수정
     public void updateColor(Color newColor) {
         currentColor = newColor;
 

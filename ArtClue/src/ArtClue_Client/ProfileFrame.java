@@ -17,25 +17,23 @@ import javax.swing.border.EmptyBorder;
 
 public class ProfileFrame extends JFrame{
 	public static final String PROFILEPATH = "/profile";
-	private JPanel contentPane;
-	JPanel panel;
+	private JPanel contentPane = new JPanel();
+	private JPanel panel= new JPanel();
 	private ArtClue artClue;
 	public ProfileFrame(ArtClue artclue) {
 		this.artClue = artclue;
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-		setBounds(100, 100, 380, 265);
-		contentPane = new JPanel();
+		setBounds(600, 150, 400, 400);
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
+        setTitle("프로필을 선택하세요!");
 		//scroll 패널 설정
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-		scrollPane.setBounds(0, 0, 374, 226);
-
+		scrollPane.setBounds(3, 0, 380, 370);
 		contentPane.add(scrollPane);
 
-		panel = new JPanel();
 		panel.setBackground(Color.WHITE);
 		scrollPane.setViewportView(panel);
 		// 이미지 파일들의 배열을 가져옴
@@ -73,4 +71,3 @@ public class ProfileFrame extends JFrame{
 		 return new ImageIcon(new ImageIcon(getClass().getResource(PROFILEPATH + "/profile" + index + ".png")).getImage().getScaledInstance(62, 72, java.awt.Image.SCALE_SMOOTH));
 	}
 }
-
